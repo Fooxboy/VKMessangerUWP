@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,14 +21,15 @@ namespace Fooxboy.VKMessagerUWP.View
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class LoginView : Page
+    public sealed partial class DialogsPageView : Page
     {
-        public ViewModel.AuthViewModel View { get; set; }
+        public DialogsViewModel ViewModel { get; set; }
 
-        public LoginView()
+        public DialogsPageView()
         {
             this.InitializeComponent();
-            View = new ViewModel.AuthViewModel();
+
+            ViewModel = new DialogsViewModel();
         }
     }
 }

@@ -1,0 +1,19 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Fooxboy.VKMessagerUWP.Resources.Styles">
+
+
+    <AcrylicBrush x:Key="AcrylicLoginGrid"
+                  BackgroundSource="Backdrop"
+                  TintOpacity="0.5" 
+                  TintColor="White"
+                  FallbackColor="White" />
+
+    <AcrylicBrush x:Key="AcrylicBackgroundDialogsGrid"
+                  BackgroundSource="HostBackdrop"
+                  TintOpacity="0.6"
+                  TintColor="White"
+                  FallbackColor="#E3E3E3" />
+
+</ResourceDictionary>

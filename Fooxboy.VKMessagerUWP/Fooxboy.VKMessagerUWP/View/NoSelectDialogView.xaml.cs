@@ -20,14 +20,11 @@ namespace Fooxboy.VKMessagerUWP.View
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class LoginView : Page
+    public sealed partial class NoSelectDialogView : Page
     {
-        public ViewModel.AuthViewModel View { get; set; }
-
-        public LoginView()
+        public NoSelectDialogView()
         {
             this.InitializeComponent();
-            View = new ViewModel.AuthViewModel();
         }
     }
 }

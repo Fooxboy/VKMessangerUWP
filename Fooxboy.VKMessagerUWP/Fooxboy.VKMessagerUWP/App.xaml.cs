@@ -5,8 +5,13 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -37,7 +42,7 @@ namespace Fooxboy.VKMessagerUWP
         /// например, если приложение запускается для открытия конкретного файла.
         /// </summary>
         /// <param name="e">Сведения о запросе и обработке запуска.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -55,6 +60,15 @@ namespace Fooxboy.VKMessagerUWP
                     //TODO: Загрузить состояние из ранее приостановленного приложения
                 }
 
+                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+
+                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+                {
+                    var appView = ApplicationView.GetForCurrentView();
+                    appView.TitleBar.ButtonBackgroundColor = Colors.Transparent;
+                    appView.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+                }
+
                 // Размещение фрейма в текущем окне
                 Window.Current.Content = rootFrame;
             }
@@ -66,7 +80,19 @@ namespace Fooxboy.VKMessagerUWP
                     // Если стек навигации не восстанавливается для перехода к первой странице,
                     // настройка новой страницы путем передачи необходимой информации в качестве параметра
                     // параметр
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+
+                    rootFrame.Navigate(typeof(View.RootView), e.Arguments);
+
+                    //var items = await StaticContent.LocalFolder.TryGetItemAsync("Accounts.json");
+                    //if(items == null)
+                    //    rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
+
+                    //else
+                    //{
+                    //    rootFrame.Navigate(typeof(MainPage), e.Arguments); 
+                    //}
+
+
                 }
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();

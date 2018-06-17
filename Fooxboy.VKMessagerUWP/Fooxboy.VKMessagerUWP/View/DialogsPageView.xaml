@@ -1,0 +1,229 @@
+﻿<Page
+    x:Class="Fooxboy.VKMessagerUWP.View.DialogsPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Fooxboy.VKMessagerUWP.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:Fooxboy.VKMessagerUWP.Model"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/TextBoxs.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Fluent.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/ListViews.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Flyouts.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+           
+        </ResourceDictionary>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource AcrylicBackgroundDialogsGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="45"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{x:Bind ViewModel.TitleText, Mode=TwoWay}" 
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="0 0 0 0"
+                   Foreground="Black"
+                   FontWeight="ExtraBold"/>
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Style="{StaticResource TextBoxSearchDialogsStyle}" Grid.Column="0" 
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     BorderThickness="0"
+                     Margin="10 0 10 0"
+                     PlaceholderText="Найти..."/>
+
+            <Button Style="{StaticResource ButtonNewMessageStyle}" Grid.Column="1" Content="&#xEB7E;"
+                    HorizontalAlignment="Center"
+                    Width="32"
+                    Margin="0 0 7 0"
+                    VerticalAlignment="Stretch">
+                <Button.Flyout>
+                    <Flyout FlyoutPresenterStyle="{StaticResource FlyoutNewMessage}">
+                        <Grid  HorizontalAlignment="Stretch" Height="532" VerticalAlignment="Stretch" Width="350">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="37"/>
+                                <RowDefinition Height="400"/>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Margin="10 0 0 0" Foreground="Black" Text="Написать новое сообщение" 
+                                       Grid.Row="0" FontWeight="Bold"/>
+                            <TextBlock Foreground="#424242"
+                                       Margin="10 0 0 0"
+                                       FontSize="14"
+                                       Text="Выберите пользователей, чтобы начать диалог" 
+                                       Grid.Row="1" />
+
+                            <TextBox Style="{StaticResource TextBoxSearchDialogsStyle}" Grid.Row="2" 
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     BorderThickness="0"
+                                     Margin="10 5 10 0"
+                                     PlaceholderText="Найти друга..."/>
+
+                            <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
+                                      SelectionMode="Multiple"
+                                      Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
+                                      Margin="0 10 0 0"
+                                      ItemsSource="{x:Bind ViewModel.Items}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="model:DialogsElementModel">
+                                        <Grid Margin="0 5 0 5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="50"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- photo users-->
+
+                                            <Ellipse Width="50" Height="50">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush>
+                                                        <ImageBrush.ImageSource>
+                                                            <BitmapImage UriSource="{x:Bind PhotoUrl}"
+                                                            DecodePixelHeight="50"
+                                                            DecodePixelWidth="50"/>
+                                                        </ImageBrush.ImageSource>
+                                                    </ImageBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+
+                                            <!-- Body and text -->
+                                            <Grid Grid.Column="1">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Margin="5 0 0 0" Grid.Row="0" Foreground="Black" FontWeight="Bold" Text="{x:Bind Title}"/>
+                                                <TextBlock Grid.Row="1"  Margin="2 0 0 0" Foreground="#424242" Text="{x:Bind Body}"/>
+                                            </Grid>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+
+
+                            </ListView>
+
+
+                            <Button Grid.Row="4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0 5 10 5"
+                                    Height="30"
+                                    Width="100"
+                                    Style="{StaticResource ButtonAcceptStyle}"
+                                    Content="Создать"/>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+
+        <ProgressRing IsEnabled="True"
+                      IsActive="{x:Bind ViewModel.IsLoadingPage, Mode=TwoWay}"
+                      Visibility="Visible"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Width="50" Height="50"
+                      Foreground="#0078D7"
+                      Grid.Row="3"/>
+
+        <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
+                  SelectedItem="{x:Bind ViewModel.SelectItem}"
+                  Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
+                  Margin="0 5 0 0"
+                  ItemsSource="{x:Bind ViewModel.Items}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:DialogsElementModel">
+                    <Grid Margin="0 5 0 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- photo users-->
+
+                        <Ellipse Width="50" Height="50">
+                            <Ellipse.Fill>
+                                <ImageBrush>
+                                    <ImageBrush.ImageSource>
+                                        <BitmapImage UriSource="{x:Bind PhotoUrl}"
+                                                     DecodePixelHeight="50"
+                                                     DecodePixelWidth="50"
+                                                     />
+                                    </ImageBrush.ImageSource>
+                                </ImageBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!-- Body and text -->
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Margin="5 0 0 0" Grid.Row="0" Foreground="Black" FontWeight="Bold" Text="{x:Bind Title}"/>
+                            <Grid Margin="5 0 0 0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" x:Name="NameDialogs" Foreground="#008CD6" Text="{x:Bind Name}"/>
+                                <TextBlock Grid.Column="1" Margin="2 0 0 0" Foreground="#424242" Text="{x:Bind Body}"/>
+                            </Grid>
+                            
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+
+        </ListView>
+
+
+        <!-- Box-->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
+                          IsChecked="{x:Bind ViewModel.IsOpenFriend, Mode=TwoWay}"
+                    Content="&#xE125;" Grid.Column="0"/>
+            <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}" 
+                          IsChecked="{x:Bind ViewModel.IsOpenDialogs, Mode=TwoWay}"
+                    Content="&#xE134;" Grid.Column="1"/>
+
+            <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
+                          IsChecked="{x:Bind ViewModel.IsOpenSettings, Mode=TwoWay}"
+                    Content="&#xE713;" Grid.Column="2"/>
+        </Grid>
+        
+    </Grid>
+</Page>

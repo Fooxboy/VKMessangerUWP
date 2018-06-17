@@ -7,23 +7,143 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/TextBoxs.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Fluent.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <ControlTemplate x:Name="ButtonLoginAccept" TargetType="Button">
+                <Grid x:Name="RootGrid" Background="{TemplateBinding Background}" CornerRadius="5">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <Storyboard>
+                                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="PointerOver">
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="#5B88BD"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPointerOver}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundPointerOver}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="#4872A3"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPressed}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundPressed}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundDisabled}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushDisabled}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundDisabled}"/>
+                                    </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTransitions="{TemplateBinding ContentTransitions}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Grid>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid>
-
+      
         <Grid.RowDefinitions>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="0.5*"/>
             <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
+
+        <Image Grid.RowSpan="3" Source="ms-appx:///Images/Background.jpg"
+               VerticalAlignment="Center"
+               Stretch="UniformToFill"
+               HorizontalAlignment="Center"/>
 
         <TextBlock 
             Text="Fooxboy 2018"
             Grid.Row="2"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"/>
-        <Grid Grid.Row="1">
-            <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                
+            VerticalAlignment="Bottom"/>
+        <Grid Grid.Row="1" >
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition MaxWidth="500"  MinWidth="400" Width="*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+            
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
+                <Grid CornerRadius="5" Background="{ThemeResource AcrylicLoginGrid}">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Visibility="Collapsed"/>
+
+                    <TextBlock Grid.Row="0" Text="АВТОРИЗАЦИЯ" 
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="18"
+                               Foreground="Black"
+                               FontWeight="Bold"/>
+                    <TextBox Style="{StaticResource TextBoxStyle}" 
+                             PlaceholderText="Логин"
+                             Text ="{x:Bind View.Login}"
+                             Margin="50 0 50 0"
+                             Grid.Row="1"/>
+
+                    <PasswordBox Style="{StaticResource PasswordBoxStyle}" 
+                                 PlaceholderText="Пароль"
+                                 Password="{x:Bind View.Password}"
+                                 Margin="50 0 50 0"
+                                 Grid.Row="3"/>
+
+                    <Grid Grid.Row="5">
+                        <Button Template="{StaticResource ButtonLoginAccept}" Content="ВОЙТИ"
+                                HorizontalAlignment="Stretch"
+                                Style="{StaticResource ButtonAcceptStyle}"
+                                VerticalAlignment="Center"
+                                FontWeight="Bold"
+                                Command="{x:Bind View.AuthCommand}"
+                                Height="35"
+                                Margin="50 0 50 0"/>
+                    </Grid>
+                   
+                </Grid>
             </ScrollViewer>
         </Grid>
 
