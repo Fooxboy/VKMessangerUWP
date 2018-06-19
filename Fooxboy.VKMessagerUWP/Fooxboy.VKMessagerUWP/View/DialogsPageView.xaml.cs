@@ -29,7 +29,9 @@ namespace Fooxboy.VKMessagerUWP.View
         {
             this.InitializeComponent();
 
-            ViewModel = new DialogsViewModel();
+            ViewModel = DialogsViewModel.GetVM();
         }
+
+        
     }
 }

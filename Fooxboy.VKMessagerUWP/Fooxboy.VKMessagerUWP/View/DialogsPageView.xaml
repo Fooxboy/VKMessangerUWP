@@ -88,7 +88,7 @@
                                       SelectionMode="Multiple"
                                       Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
                                       Margin="0 10 0 0"
-                                      ItemsSource="{x:Bind ViewModel.Items}">
+                                      ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="model:DialogsElementModel">
                                         <Grid Margin="0 5 0 5">
@@ -153,10 +153,12 @@
                       Grid.Row="3"/>
 
         <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
-                  SelectedItem="{x:Bind ViewModel.SelectItem}"
+                  SelectedItem="{x:Bind ViewModel.SelectItemDialog, Mode=TwoWay}"
+                 
+                  Tapped="{x:Bind ViewModel.ListView_Tapped}"
                   Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
                   Margin="0 5 0 0"
-                  ItemsSource="{x:Bind ViewModel.Items}">
+                  ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="model:DialogsElementModel">
                     <Grid Margin="0 5 0 5">
@@ -164,7 +166,7 @@
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <!-- photo users-->
 
                         <Ellipse Width="50" Height="50">
@@ -195,13 +197,11 @@
                                 <TextBlock Grid.Column="0" x:Name="NameDialogs" Foreground="#008CD6" Text="{x:Bind Name}"/>
                                 <TextBlock Grid.Column="1" Margin="2 0 0 0" Foreground="#424242" Text="{x:Bind Body}"/>
                             </Grid>
-                            
+
                         </Grid>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
-
         </ListView>
 
 
@@ -214,13 +214,18 @@
             </Grid.ColumnDefinitions>
 
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
+                          Margin="10 0 10 0"
                           IsChecked="{x:Bind ViewModel.IsOpenFriend, Mode=TwoWay}"
                     Content="&#xE125;" Grid.Column="0"/>
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}" 
+                          Margin="10 0 10 0"
+                          
                           IsChecked="{x:Bind ViewModel.IsOpenDialogs, Mode=TwoWay}"
                     Content="&#xE134;" Grid.Column="1"/>
 
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
+                          Margin="10 0 10 0"
+                          
                           IsChecked="{x:Bind ViewModel.IsOpenSettings, Mode=TwoWay}"
                     Content="&#xE713;" Grid.Column="2"/>
         </Grid>

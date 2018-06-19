@@ -122,13 +122,13 @@
                                FontWeight="Bold"/>
                     <TextBox Style="{StaticResource TextBoxStyle}" 
                              PlaceholderText="Логин"
-                             Text ="{x:Bind View.Login}"
+                             Text ="{x:Bind View.Login, Mode=TwoWay}"
                              Margin="50 0 50 0"
                              Grid.Row="1"/>
 
                     <PasswordBox Style="{StaticResource PasswordBoxStyle}" 
                                  PlaceholderText="Пароль"
-                                 Password="{x:Bind View.Password}"
+                                 Password="{x:Bind View.Password, Mode=TwoWay}"
                                  Margin="50 0 50 0"
                                  Grid.Row="3"/>
 

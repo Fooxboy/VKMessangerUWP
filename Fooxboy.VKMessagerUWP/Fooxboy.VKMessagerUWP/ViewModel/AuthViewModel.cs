@@ -19,6 +19,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             get => _login;
             set
             {
+                if (value == _login) return;
                 _login = value;
                 Changed("Login");
             }
@@ -35,6 +36,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             get => _password;
             set
             {
+                if (value == _password) return;
                 _password = value;
                 Changed("Password");
             }
@@ -42,18 +44,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         private async void StartAuth()
         {
-
-            //ContentDialog contentDialog = new ContentDialog()
-            //{
-            //    Title = "Полученные данные",
-            //    Content = $"Token=  ID =  ",
-            //    PrimaryButtonText = "ОК",
-            //    SecondaryButtonText = "Отмена"
-            //};
-
-            
-
-            //var item = await StaticContent.LocalFolder.TryGetItemAsync("Accounts.json");
+            //Проверяем существование файла с токенами.
+            var item = await StaticContent.LocalFolder.TryGetItemAsync("Accounts.json");
 
          /*   ContentDialog contentDialog = new ContentDialog()
             {

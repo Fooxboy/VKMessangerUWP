@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -20,14 +23,17 @@ namespace Fooxboy.VKMessagerUWP.View
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class RootView : Page
+    public sealed partial class DialogView : Page
     {
-        public RootView()
+        public DialogsViewModel ViewModel { get; set; }
+
+        public DialogView()
         {
             this.InitializeComponent();
 
-            FrameMessages.Navigate(typeof(DialogView));
-            FrameDialogs.Navigate(typeof(DialogsPageView));
+            ViewModel = DialogsViewModel.GetVM();
+            var appView = ApplicationView.GetForCurrentView();
+            appView.TitleBar.ButtonForegroundColor = Colors.Black;
         }
     }
 }

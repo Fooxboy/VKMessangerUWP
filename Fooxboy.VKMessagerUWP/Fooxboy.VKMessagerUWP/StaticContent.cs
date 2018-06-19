@@ -10,17 +10,6 @@ namespace Fooxboy.VKMessagerUWP
 {
     public static class StaticContent
     {
-       /* private static VkApi _apivk;
-
-        public static StorageFolder LocalFolder = ApplicationData.Current.LocalFolder;
-
-        public static VkApi Vk
-        {
-            get
-            {
-                if(_apivk is null) _apivk = Model.Auth.AuthForToken();
-                return _apivk;
-            }
-        }*/
+        public static StorageFolder LocalFolder = ApplicationData.Current.LocalFolder;     
     }
 }
