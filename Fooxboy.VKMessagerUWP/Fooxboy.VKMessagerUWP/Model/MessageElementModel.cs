@@ -8,9 +8,10 @@ namespace Fooxboy.VKMessagerUWP.Model
 {
     public class MessageElementModel
     {
+        public string Name { get; set; }
         public long MessageId { get; set; }
         public long UserFromId { get; set; }
-        public string UrlPhoto { get; set; }
+        public string PhotoUrl { get; set; }
         public string Body { get; set; }
         public string Time { get; set; }
         public bool ByMe { get; set; }

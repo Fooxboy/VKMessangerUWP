@@ -17,14 +17,15 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>Fooxboy.VKMessagerUWP_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Fooxboy.VKMessagerUWP_StoreKey.pfx</PackageCertificateKeyFile>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <PackageCertificateThumbprint>070A871034CA2E884E749E684FFD2465D0BDAC8F</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -102,13 +103,43 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CaptchaContentDialog.xaml.cs">
+      <DependentUpon>CaptchaContentDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TwoFactorAuthorizationContentDialog.xaml.cs">
+      <DependentUpon>TwoFactorAuthorizationContentDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DownloaderImages.cs" />
+    <Compile Include="Exceptions\AppOfflineException.cs" />
+    <Compile Include="Exceptions\CaptchaException.cs" />
+    <Compile Include="Exceptions\ConfirmationUserException.cs" />
+    <Compile Include="Exceptions\DataLimitException.cs" />
+    <Compile Include="Exceptions\InvalidUserException.cs" />
+    <Compile Include="Exceptions\MoreRequestException.cs" />
+    <Compile Include="Exceptions\NativeCoreVkException.cs" />
+    <Compile Include="Exceptions\NoAccessAudioException.cs" />
+    <Compile Include="Exceptions\NoAccessException.cs" />
+    <Compile Include="Exceptions\NoAccessGroupException.cs" />
+    <Compile Include="Exceptions\NoAccessPhotoAlbumException.cs" />
+    <Compile Include="Exceptions\NoAuthException.cs" />
+    <Compile Include="Exceptions\NoTokenFoundException.cs" />
+    <Compile Include="Exceptions\UnknownErrorException.cs" />
+    <Compile Include="Exceptions\UnknownMethodException.cs" />
+    <Compile Include="Exceptions\UserBannedException.cs" />
+    <Compile Include="Exceptions\VkException.cs" />
+    <Compile Include="LoadingCollection.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Accounts.cs" />
     <Compile Include="Model\Auth.cs" />
     <Compile Include="Model\DialogsElementModel.cs" />
+    <Compile Include="Model\FriendItem.cs" />
     <Compile Include="Model\MessageElementModel.cs" />
+    <Compile Include="NavigationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Selectors\MessageTypeTemplateSelector.cs" />
@@ -116,6 +147,8 @@
     <Compile Include="ViewModel\AuthViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DialogsViewModel.cs" />
+    <Compile Include="ViewModel\SearchViewModel.cs" />
+    <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="View\DialogsPageView.xaml.cs">
       <DependentUpon>DialogsPageView.xaml</DependentUpon>
     </Compile>
@@ -125,22 +158,73 @@
     <Compile Include="View\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NoSelectDialogView.xaml.cs">
-      <DependentUpon>NoSelectDialogView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\RootView.xaml.cs">
       <DependentUpon>RootView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VK\Call.cs" />
+    <Compile Include="VK\Converts.cs" />
+    <Compile Include="VK\Methods\Conversations.cs" />
+    <Compile Include="VK\Methods\Friends.cs" />
+    <Compile Include="VK\Methods\Groups.cs" />
+    <Compile Include="VK\Methods\Users.cs" />
+    <Compile Include="VK\Models\ActionChat.cs" />
+    <Compile Include="VK\Models\Attach.cs" />
+    <Compile Include="VK\Models\Attachments\Audio.cs" />
+    <Compile Include="VK\Models\Attachments\Document.cs" />
+    <Compile Include="VK\Models\Attachments\Gift.cs" />
+    <Compile Include="VK\Models\Attachments\Link.cs" />
+    <Compile Include="VK\Models\Attachments\Market.cs" />
+    <Compile Include="VK\Models\Attachments\MarketAlbum.cs" />
+    <Compile Include="VK\Models\Attachments\Photo.cs" />
+    <Compile Include="VK\Models\Attachments\Sticker.cs" />
+    <Compile Include="VK\Models\Attachments\Undefined.cs" />
+    <Compile Include="VK\Models\Attachments\Video.cs" />
+    <Compile Include="VK\Models\Attachments\Wall.cs" />
+    <Compile Include="VK\Models\Attachments\WallReply.cs" />
+    <Compile Include="VK\Models\BanInfoGroup.cs" />
+    <Compile Include="VK\Models\CareerUser.cs" />
+    <Compile Include="VK\Models\CityUser.cs" />
+    <Compile Include="VK\Models\ContactsGroup.cs" />
+    <Compile Include="VK\Models\ContactsUser.cs" />
+    <Compile Include="VK\Models\Conversation.cs" />
+    <Compile Include="VK\Models\ConversationCanWrite.cs" />
+    <Compile Include="VK\Models\ConversationChatSettings.cs" />
+    <Compile Include="VK\Models\ConversationsList.cs" />
+    <Compile Include="VK\Models\CountersUser.cs" />
+    <Compile Include="VK\Models\CountryUser.cs" />
+    <Compile Include="VK\Models\CoverGroup.cs" />
+    <Compile Include="VK\Models\CropPhotoUser.cs" />
+    <Compile Include="VK\Models\EducationUser.cs" />
+    <Compile Include="VK\Models\Error.cs" />
+    <Compile Include="VK\Models\FriendsList.cs" />
+    <Compile Include="VK\Models\Geo.cs" />
+    <Compile Include="VK\Models\Group.cs" />
+    <Compile Include="VK\Models\LastSeenUser.cs" />
+    <Compile Include="VK\Models\Message.cs" />
+    <Compile Include="VK\Models\MilitaryUser.cs" />
+    <Compile Include="VK\Models\OccupationUser.cs" />
+    <Compile Include="VK\Models\PersonalUser.cs" />
+    <Compile Include="VK\Models\Photo.cs" />
+    <Compile Include="VK\Models\PinnedMessage.cs" />
+    <Compile Include="VK\Models\PushSettings.cs" />
+    <Compile Include="VK\Models\RelativeUser.cs" />
+    <Compile Include="VK\Models\Response.cs" />
+    <Compile Include="VK\Models\User.cs" />
+    <Compile Include="VK\Models\Users.cs" />
+    <Compile Include="VK\Token.cs" />
+    <Compile Include="VK\Request.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Fooxboy.VKMessagerUWP_StoreKey.pfx" />
     <None Include="Fooxboy.VKMessagerUWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\Background.jpg" />
     <Content Include="Images\PhotoUser.jpg" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -155,6 +239,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\CaptchaContentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SettingsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TwoFactorAuthorizationContentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -187,6 +283,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\DialogsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -199,10 +299,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\NoSelectDialogView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\RootView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -211,6 +307,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.5</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

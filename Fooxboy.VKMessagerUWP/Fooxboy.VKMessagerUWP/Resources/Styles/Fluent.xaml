@@ -12,7 +12,7 @@
 
     <AcrylicBrush x:Key="AcrylicDialogGrid"
                   BackgroundSource="Backdrop"
-                  TintOpacity="0.5" 
+                  TintOpacity="0.1" 
                   TintColor="White"
                   FallbackColor="#A6A6A6" />
 
@@ -27,6 +27,18 @@
                   TintOpacity="0.5" 
                   TintColor="#5B88BD"
                   FallbackColor="#5B88BD" />
+
+    <AcrylicBrush x:Key="AcrylicLoginLoadingGrid"
+                  BackgroundSource="Backdrop"
+                  TintOpacity="0.2" 
+                  TintColor="Black"
+                  FallbackColor="#727274" />
+
+    <AcrylicBrush x:Key="AcrylicOnlineFriend"
+                  BackgroundSource="Backdrop"
+                  TintOpacity="0.4" 
+                  TintColor="#0078D7"
+                  FallbackColor="#0078D7" />
 
 
 </ResourceDictionary>

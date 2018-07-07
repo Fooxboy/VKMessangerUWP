@@ -25,7 +25,8 @@ namespace Fooxboy.VKMessagerUWP.View
         public RootView()
         {
             this.InitializeComponent();
-
+            StaticContent.DialogsFrameSet(FrameDialogs);
+            StaticContent.MessagesFrameSet(FrameMessages);
             FrameMessages.Navigate(typeof(DialogView));
             FrameDialogs.Navigate(typeof(DialogsPageView));
         }

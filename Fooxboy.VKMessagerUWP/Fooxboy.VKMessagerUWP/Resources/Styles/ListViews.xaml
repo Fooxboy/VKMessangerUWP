@@ -166,7 +166,9 @@
         </Setter>
     </Style>
     <Style x:Key="ListViewItemContainerStyle"
-           BasedOn="{StaticResource ListViewItemRevealStyle}" 
-           TargetType="ListViewItem"/>
+           TargetType="ListViewItem">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
 
 </ResourceDictionary>

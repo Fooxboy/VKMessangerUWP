@@ -29,5 +29,10 @@ namespace Fooxboy.VKMessagerUWP.View
             this.InitializeComponent();
             View = new ViewModel.AuthViewModel();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.FindName("loadingGrid");
+        }
     }
 }

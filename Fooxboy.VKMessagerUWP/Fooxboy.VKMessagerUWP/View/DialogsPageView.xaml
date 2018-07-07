@@ -39,6 +39,7 @@
                    Foreground="Black"
                    FontWeight="ExtraBold"/>
 
+        <!-- Search bar-->
         <Grid Grid.Row="2">
 
             <Grid.ColumnDefinitions>
@@ -49,6 +50,8 @@
             <TextBox Style="{StaticResource TextBoxSearchDialogsStyle}" Grid.Column="0" 
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch"
+                     Text ="{x:Bind Search.TextSearch}"
+                     TextChanged="{x:Bind Search.TextBox_TextChanged}"
                      BorderThickness="0"
                      Margin="10 0 10 0"
                      PlaceholderText="Найти..."/>
@@ -84,13 +87,17 @@
                                      Margin="10 5 10 0"
                                      PlaceholderText="Найти друга..."/>
 
+                            <TextBlock Text="Возможно, Ваши друзья не загрузились."
+                                       Foreground="Black"
+                                       Grid.Row="3"/>
+
                             <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
                                       SelectionMode="Multiple"
                                       Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
                                       Margin="0 10 0 0"
-                                      ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
+                                      ItemsSource="{x:Bind ViewModel.ItemsFriends, Mode=TwoWay}">
                                 <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="model:DialogsElementModel">
+                                    <DataTemplate x:DataType="model:FriendItem">
                                         <Grid Margin="0 5 0 5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="50"/>
@@ -103,28 +110,40 @@
                                                 <Ellipse.Fill>
                                                     <ImageBrush>
                                                         <ImageBrush.ImageSource>
-                                                            <BitmapImage UriSource="{x:Bind PhotoUrl}"
-                                                            DecodePixelHeight="50"
-                                                            DecodePixelWidth="50"/>
+                                                            <BitmapImage UriSource="{x:Bind PhotoUrl, Mode=TwoWay}"
+                                                     DecodePixelHeight="50"
+                                                     DecodePixelWidth="50"
+                                                     />
                                                         </ImageBrush.ImageSource>
                                                     </ImageBrush>
                                                 </Ellipse.Fill>
                                             </Ellipse>
 
+                                            <Ellipse Width="15" Height="15" 
+                                 Margin="30 35 0 0"
+                                 Visibility="{x:Bind Online}"
+                                 Fill="{ThemeResource AcrylicOnlineFriend}"/>
+
                                             <!-- Body and text -->
+
                                             <Grid Grid.Column="1">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="*"/>
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
-                                                <TextBlock Margin="5 0 0 0" Grid.Row="0" Foreground="Black" FontWeight="Bold" Text="{x:Bind Title}"/>
-                                                <TextBlock Grid.Row="1"  Margin="2 0 0 0" Foreground="#424242" Text="{x:Bind Body}"/>
+
+                                                <TextBlock Margin="5 0 0 0" 
+                                       Grid.Row="0"
+                                       Foreground="Black" FontWeight="Bold"
+                                       Text="{x:Bind  Name, Mode=TwoWay}"/>
+
+                                                <TextBlock Grid.Row="1" Margin="5 0 0 0" 
+                                       Foreground="#424242" 
+                                       Text="{x:Bind Body, Mode=TwoWay}"/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
-
-
                             </ListView>
 
 
@@ -142,25 +161,25 @@
             </Button>
         </Grid>
 
-
-        <ProgressRing IsEnabled="True"
-                      IsActive="{x:Bind ViewModel.IsLoadingPage, Mode=TwoWay}"
-                      Visibility="Visible"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Width="50" Height="50"
-                      Foreground="#0078D7"
-                      Grid.Row="3"/>
+        <!-- list Friends -->
 
         <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
-                  SelectedItem="{x:Bind ViewModel.SelectItemDialog, Mode=TwoWay}"
-                 
-                  Tapped="{x:Bind ViewModel.ListView_Tapped}"
-                  Style="{StaticResource ListViewDialogsStyle}" Grid.Row="3"
+                  x:Name="FriendsListView"
+                  SelectedItem="{x:Bind ViewModel.SelectItemFriend, Mode=TwoWay}"
+                  Visibility="{x:Bind ViewModel.VisibleListViewFriends, Mode=TwoWay}"
+                  Style="{StaticResource ListViewDialogsStyle}" 
                   Margin="0 5 0 0"
-                  ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
+                  Grid.Row="3"
+                  ItemsSource="{x:Bind ViewModel.ItemsFriends, Mode=TwoWay}">
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel VerticalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="model:DialogsElementModel">
+                <DataTemplate x:DataType="model:FriendItem">
                     <Grid Margin="0 5 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
@@ -173,7 +192,77 @@
                             <Ellipse.Fill>
                                 <ImageBrush>
                                     <ImageBrush.ImageSource>
-                                        <BitmapImage UriSource="{x:Bind PhotoUrl}"
+                                        <BitmapImage UriSource="{x:Bind PhotoUrl, Mode=TwoWay}"
+                                                     DecodePixelHeight="50"
+                                                     DecodePixelWidth="50"
+                                                     />
+                                    </ImageBrush.ImageSource>
+                                </ImageBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        
+                        <Ellipse Width="15" Height="15" 
+                                 Margin="30 35 0 0"
+                                 Visibility="{x:Bind Online}"
+                                 Fill="{ThemeResource AcrylicOnlineFriend}"/>
+
+                        <!-- Body and text -->
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Margin="5 0 0 0" 
+                                       Grid.Row="0"
+                                       Foreground="Black" FontWeight="Bold"
+                                       Text="{x:Bind  Name, Mode=TwoWay}"/>
+
+                            <TextBlock Grid.Row="1" Margin="5 0 0 0" 
+                                       Foreground="#424242" 
+                                       Text="{x:Bind Body, Mode=TwoWay}"/>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+
+        <!-- list dialogs -->
+        <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
+                  SelectedItem="{x:Bind ViewModel.SelectItemDialog, Mode=TwoWay}"
+                  ItemClick="{x:Bind ViewModel.ListView_ItemClick}"
+                  Tapped="{x:Bind ViewModel.ListView_Tapped}"
+                  Visibility="{x:Bind ViewModel.VisibleListView, Mode=TwoWay}"
+                  Style="{StaticResource ListViewDialogsStyle}" 
+                  Margin="0 5 0 0"
+                  Grid.Row="3"
+                  ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel VerticalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:DialogsElementModel">
+                    <Grid Margin="0 5 0 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- photo users-->
+
+                        <Ellipse Width="50" Height="50">
+                            <Ellipse.Fill>
+                                <ImageBrush>
+                                    <ImageBrush.ImageSource>
+                                        <BitmapImage UriSource="{x:Bind PhotoUrl, Mode=TwoWay}"
                                                      DecodePixelHeight="50"
                                                      DecodePixelWidth="50"
                                                      />
@@ -183,27 +272,101 @@
                         </Ellipse>
 
                         <!-- Body and text -->
+                        
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Margin="5 0 0 0" Grid.Row="0" Foreground="Black" FontWeight="Bold" Text="{x:Bind Title}"/>
-                            <Grid Margin="5 0 0 0" Grid.Row="1">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Margin="5 0 0 0" Grid.Row="0" 
+                                       Grid.Column="0"
+                                       Foreground="Black" FontWeight="Bold"
+                                       Text="{x:Bind Title, Mode=TwoWay}"/>
+                            
+                            <TextBlock Grid.Column="1"
+                                       Visibility="{x:Bind MuteNotifications, Mode=TwoWay}"
+                                       Text="&#xE198;"
+                                       HorizontalAlignment="Left"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       Foreground="Black"/>
+
+                            
+
+                            <Grid Margin="5 0 0 0" Grid.Row="1" Grid.ColumnSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition  Width="auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" x:Name="NameDialogs" Foreground="#008CD6" Text="{x:Bind Name}"/>
-                                <TextBlock Grid.Column="1" Margin="2 0 0 0" Foreground="#424242" Text="{x:Bind Body}"/>
+                                <TextBlock Grid.Column="0"
+                                           x:Name="NameDialogs"
+                                           Foreground="#0078D7"
+                                           Text="{x:Bind Name, Mode=TwoWay}"/>
+                                <TextBlock Grid.Column="1" Margin="5 0 0 0" Foreground="#424242" Text="{x:Bind Body, Mode=TwoWay}"/>
                             </Grid>
 
                         </Grid>
+
+
+                        <TextBlock Text="{x:Bind Time}"
+                                   FontSize="12"
+                                   
+                                   Foreground="#383838"
+                                   VerticalAlignment="Top"
+                                       Grid.Column="2"
+                                       HorizontalAlignment="Right"/>
+
+                        <!-- count unread messages-->
+
+                        <Rectangle Grid.Column="2"
+                                   x:Name ="Rect"
+                                   RadiusX="12"
+                                   RadiusY="12"
+                                   VerticalAlignment="Bottom"
+                                   Visibility="{x:Bind VisibleUnread, Mode=TwoWay}"
+                                   Fill="#0078D7" Width="{x:Bind WidthUnread}" Height="22" 
+                                  HorizontalAlignment="Right"/>
+
+                        <TextBlock
+                            Grid.Column="2"
+                            Foreground="White"
+                            FontSize ="14"
+                            Width="{Binding ElementName=Rect, Path=Width}"
+                            TextAlignment="Center"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Margin="0 0 0 2"
+                            Text="{x:Bind CountUnread, Mode=TwoWay}"
+                            Visibility="{x:Bind VisibleUnread, Mode=TwoWay}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        
 
+        <Rectangle
+            Width="90" Height="90"
+            RadiusX="10"
+            RadiusY="10"
+            Visibility="{x:Bind ViewModel.IsVisibleBlack, Mode=TwoWay}"
+            HorizontalAlignment="Center"
+            Grid.Row="3"
+            VerticalAlignment="Center"
+            Fill="{ThemeResource AcrylicLoginLoadingGrid}"/>
+
+        <ProgressRing IsEnabled="True"
+                      IsActive="{x:Bind ViewModel.IsLoadingPage, Mode=TwoWay}"
+                      Visibility="Visible"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Width="50" Height="50"
+                      Foreground="White"
+                      Grid.Row="3"/>
 
         <!-- Box-->
         <Grid Grid.Row="4">
@@ -215,13 +378,37 @@
 
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
                           Margin="10 0 10 0"
+                          Command="{x:Bind ViewModel.OpenFriendsCommand}"
                           IsChecked="{x:Bind ViewModel.IsOpenFriend, Mode=TwoWay}"
                     Content="&#xE125;" Grid.Column="0"/>
+
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}" 
                           Margin="10 0 10 0"
-                          
+                          Command="{x:Bind ViewModel.OpenDialogsCommand}"
                           IsChecked="{x:Bind ViewModel.IsOpenDialogs, Mode=TwoWay}"
                     Content="&#xE134;" Grid.Column="1"/>
+
+            <Rectangle Grid.Column="1"
+                                   RadiusX="12"
+                                   RadiusY="12"
+                                   VerticalAlignment="Top"
+                            Visibility="{x:Bind ViewModel.VisibilityUnread, Mode=TwoWay}"
+                       Margin="0 0 29 0"
+                       
+                                   Fill="#0078D7" Width="{x:Bind ViewModel.WidthUnread, Mode =TwoWay}" Height="22" 
+                                  HorizontalAlignment="Right"/>
+
+            <TextBlock
+                            Grid.Column="1"
+                            Foreground="White"
+                            Margin="0 0 35 0"
+                
+                            FontSize ="14"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+
+                            Visibility="{x:Bind ViewModel.VisibilityUnread, Mode=TwoWay}"
+                            Text="{x:Bind ViewModel.CountUnread, Mode=TwoWay}"/>
 
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
                           Margin="10 0 10 0"

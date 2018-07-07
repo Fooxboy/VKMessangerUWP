@@ -73,78 +73,94 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid>
-      
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition/>
-            <RowDefinition Height="0.5*"/>
-        </Grid.RowDefinitions>
+    
+    <!--Root grid page-->
 
-        <Image Grid.RowSpan="3" Source="ms-appx:///Images/Background.jpg"
+    <Grid x:Name="RootGrid">
+
+        <!-- page view login -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+
+            <Image Grid.RowSpan="3" Source="ms-appx:///Images/Background.jpg"
                VerticalAlignment="Center"
                Stretch="UniformToFill"
                HorizontalAlignment="Center"/>
 
-        <TextBlock 
+            <TextBlock 
             Text="Fooxboy 2018"
             Grid.Row="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"/>
-        <Grid Grid.Row="1" >
+            <Grid Grid.Row="1" >
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition MaxWidth="500"  MinWidth="400" Width="*"/>
-                <ColumnDefinition Width="0.5*"/>
-            </Grid.ColumnDefinitions>
-            
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
-                <Grid CornerRadius="5" Background="{ThemeResource AcrylicLoginGrid}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition MaxWidth="500"  MinWidth="400" Width="*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="32"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="32"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
+                    <Grid CornerRadius="5" Background="{ThemeResource AcrylicLoginGrid}">
 
-                    <TextBox Grid.Row="0" Visibility="Collapsed"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="АВТОРИЗАЦИЯ" 
+                        <TextBox Grid.Row="0" Visibility="Collapsed"/>
+
+                        <TextBlock Grid.Row="0" Text="АВТОРИЗАЦИЯ" 
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                FontSize="18"
                                Foreground="Black"
                                FontWeight="Bold"/>
-                    <TextBox Style="{StaticResource TextBoxStyle}" 
-                             PlaceholderText="Логин"
-                             Text ="{x:Bind View.Login, Mode=TwoWay}"
-                             Margin="50 0 50 0"
-                             Grid.Row="1"/>
 
-                    <PasswordBox Style="{StaticResource PasswordBoxStyle}" 
-                                 PlaceholderText="Пароль"
-                                 Password="{x:Bind View.Password, Mode=TwoWay}"
-                                 Margin="50 0 50 0"
-                                 Grid.Row="3"/>
-
-                    <Grid Grid.Row="5">
-                        <Button Template="{StaticResource ButtonLoginAccept}" Content="ВОЙТИ"
+                        <Grid Grid.Row="5">
+                            <Button Template="{StaticResource ButtonLoginAccept}" Content="ВОЙТИ"
                                 HorizontalAlignment="Stretch"
                                 Style="{StaticResource ButtonAcceptStyle}"
                                 VerticalAlignment="Center"
                                 FontWeight="Bold"
+                                    Click="Button_Click"
                                 Command="{x:Bind View.AuthCommand}"
                                 Height="35"
                                 Margin="50 0 50 0"/>
+                        </Grid>
+
                     </Grid>
-                   
-                </Grid>
-            </ScrollViewer>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+
+
+        <!-- page view login loading -->
+        <Grid x:Name="loadingGrid" x:DeferLoadStrategy="Lazy" Visibility="{x:Bind View.VisibilityLoadingGrid, Mode=TwoWay}" Background="{ThemeResource AcrylicLoginLoadingGrid}">
+            <ProgressRing 
+                Foreground="#0378B5"
+                Margin="0 0 0 50"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsActive="{x:Bind View.IsStartLoading, Mode=TwoWay}"
+                Height="60" Width="60" />
+            <TextBlock 
+                Margin="0 50 0 0"
+                FontSize="17"
+                Foreground="#1F1F1F"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="Вход  в аккаунт..."/>
         </Grid>
 
     </Grid>

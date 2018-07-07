@@ -27,60 +27,6 @@
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
             </Style>
 
-            <DataTemplate x:Name="ByFriend"  x:DataType="model:MessageElementModel">
-                <Grid Margin="0 10 0 10">
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <Rectangle Fill="#1A95F2"
-                               Grid.Column="1"
-                               Margin="5 0 0 0"
-                                HorizontalAlignment="Left"
-                               Width="{Binding ElementName=BodyMessage, Path=Width}"
-                               Height="{Binding ElementName=BodyMessage, Path=Height}"
-                               RadiusX="15" RadiusY="15" />
-
-                    <RichTextBlock x:Name="BodyMessage" HorizontalAlignment="Left" Margin="5 5 5 5">
-                        <Paragraph>
-                            <Run Text="{x:Bind Body}"/>
-                        </Paragraph>
-                    </RichTextBlock>
-
-                    
-                    <TextBlock HorizontalAlignment="Right"
-                                       Text="{x:Bind Time}"
-                                       Foreground="#D1D1D1"
-                                       FontSize="14"
-                                       VerticalAlignment="Bottom"/>
-
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Name="ByMe" x:DataType="model:MessageElementModel">
-                <Grid Margin="0 10 0 10">
-                    <Rectangle Fill="Gray" Height="50" HorizontalAlignment="Right" Width="200"/>
-                    <TextBlock VerticalAlignment="Center"
-                               HorizontalAlignment="Right"
-                               Margin="0 0 5 0"
-                               Foreground="White" Text="{x:Bind Body}"/>
-                    <TextBlock HorizontalAlignment="Right"
-                                       Text="{x:Bind Time}"
-                                       Foreground="#D1D1D1"
-                                       FontSize="14"
-                                       VerticalAlignment="Bottom"/>
-                </Grid>
-            </DataTemplate>
-
             <ControlTemplate x:Name="ButtonAttachTemplate" TargetType="Button">
                 <Grid x:Name="RootGrid" Background="{TemplateBinding Background}" CornerRadius="5">
                     <VisualStateManager.VisualStateGroups>
@@ -141,10 +87,6 @@
 
     <!-- Root Grid-->
     <Grid>
-
-       
-
-
         <!--Grid selected dialog-->
         <Grid Visibility="{x:Bind ViewModel.VisibleDialogView, Mode=TwoWay}">
             <Grid.RowDefinitions>
@@ -165,11 +107,47 @@
             <Grid Grid.RowSpan="3" Grid.ColumnSpan="3" Background="White"/>
             <ListView Grid.RowSpan="3" Grid.ColumnSpan="3" ItemContainerStyle="{StaticResource ItemContainerStyle}" 
                       ItemsSource="{x:Bind ViewModel.ItemsMessgages}">
-                <ListView.ItemTemplateSelector>
-                    <selectors:MessageTypeTemplateSelector
-                        MessageByMe="{StaticResource ByMe}"
-                        MessageByFriend="{StaticResource ByFriend}"/>
-                </ListView.ItemTemplateSelector>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="model:MessageElementModel">
+                        <Grid Margin="0 10 0 10">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Ellipse Grid.Column="0" Grid.Row="0" Width="30" Height="30">
+                                <Ellipse.Fill>
+                                    <ImageBrush>
+                                        <ImageBrush.ImageSource>
+                                            <BitmapImage  UriSource="{x:Bind PhotoUrl, Mode=TwoWay}"
+                                                            DecodePixelHeight="30"
+                                                            DecodePixelWidth="30"/>
+                                        </ImageBrush.ImageSource>
+                                    </ImageBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <TextBlock Grid.Column="1" FontWeight="Bold" Margin="5 0 0 0" Foreground="Black" Text="{x:Bind Name}" Grid.Row="0"/>
+
+                            <TextBlock Grid.Column="2"  Foreground="#383838" Text="{x:Bind Time}" Grid.Row="0"/>
+
+                            <RichTextBlock Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
+                                <Paragraph>
+                                    <Run Foreground="Black" Text="{x:Bind Body}"/>
+                                </Paragraph>
+                            </RichTextBlock>
+
+
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
 
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>

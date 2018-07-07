@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.Model;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,22 +79,30 @@ namespace Fooxboy.VKMessagerUWP
             {
                 if (rootFrame.Content == null)
                 {
-                    // Если стек навигации не восстанавливается для перехода к первой странице,
-                    // настройка новой страницы путем передачи необходимой информации в качестве параметра
-                    // параметр
+                    StaticContent.RootPageSet(rootFrame);
+                    var item = await StaticContent.LocalFolder.TryGetItemAsync("Tokens.json");
+                    if(item is null) rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
+                    else
+                    {
+                        try
+                        {
+                            var file = await StaticContent.LocalFolder.GetFileAsync("Tokens.json");
+                            var jsonText = await FileIO.ReadTextAsync(file);
+                            var accounts = JsonConvert.DeserializeObject<AccountsList>(jsonText);
 
-                    rootFrame.Navigate(typeof(View.RootView), e.Arguments);
-
-                    //var items = await StaticContent.LocalFolder.TryGetItemAsync("Accounts.json");
-                    //if(items == null)
-                    //    rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
-
-                    //else
-                    //{
-                    //    rootFrame.Navigate(typeof(MainPage), e.Arguments); 
-                    //}
-
-
+                            if (accounts.Accounts[0].Token is null) rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
+                            else
+                            {
+                                var token = accounts.Accounts[0].Token;
+                               // var vk = await StaticContent.GetVk(token);
+                                rootFrame.Navigate(typeof(View.RootView), e.Arguments);
+                            }
+                        }
+                        catch
+                        {
+                            rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
+                        }
+                    }
                 }
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();
