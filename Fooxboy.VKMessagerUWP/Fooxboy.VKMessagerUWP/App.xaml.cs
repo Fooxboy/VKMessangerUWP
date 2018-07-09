@@ -75,6 +75,20 @@ namespace Fooxboy.VKMessagerUWP
                 Window.Current.Content = rootFrame;
             }
 
+            //создание папки с кэшем
+            var itemFolder = await StaticContent.LocalFolder.TryGetItemAsync("Cache");
+            if(itemFolder == null)
+            {
+                await StaticContent.LocalFolder.CreateFolderAsync("Cache");
+            }
+
+            //создание папки с базами данных
+            var itemFolderDB = await StaticContent.LocalFolder.TryGetItemAsync("Databases");
+            if (itemFolderDB == null)
+            {
+                await StaticContent.LocalFolder.CreateFolderAsync("Databases");
+            }
+
             if (e.PrelaunchActivated == false)
             {
                 if (rootFrame.Content == null)

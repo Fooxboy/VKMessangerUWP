@@ -1,4 +1,5 @@
-﻿using Fooxboy.VKMessagerUWP.Model;
+﻿using Fooxboy.VKMessagerUWP.Controls;
+using Fooxboy.VKMessagerUWP.Model;
 using Fooxboy.VKMessagerUWP.VK;
 using Fooxboy.VKMessagerUWP.VK.Models;
 using Fooxboy.VKMessagerUWP.VK.Models.Attachments;
@@ -95,7 +96,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
         }
 
-        private ObservableCollection<FriendItem> _itemsFriends= 
+        private ObservableCollection<FriendItem> _itemsFriends; 
         public ObservableCollection<FriendItem> ItemsFriends
         {
             get => _itemsFriends;
@@ -125,14 +126,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             IsOpenSettings = false;
             VisibleListView = Visibility.Collapsed;
             VisibleListViewFriends = Visibility.Visible;
-            _itemsFriends = new ObservableCollection<FriendItem>();
+            ItemsFriends = new ObservableCollection<FriendItem>();
             await GetMoreFriends();
         }
 
         private async Task GetMoreFriends()
         {
             IsLoadingPage = true;
-            var friends = await VK.Methods.Friends.List(fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
+            var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
             MaxFriends = friends.count;
             foreach (var friend in friends.items)
             {
@@ -239,6 +240,21 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         public RelayCommand OpenDialogsCommand
         {
             get => _OpenDialogsCommand = _OpenDialogsCommand ?? new RelayCommand(async () => await OpenDialogs());
+        }
+
+        private RelayCommand _openSettingsCommand;
+        public RelayCommand OpenSettingsCommand
+        {
+            get => _openSettingsCommand = _openSettingsCommand ?? new RelayCommand(async () => await OpenSettings());
+        }
+
+
+        private async Task OpenSettings()
+        {
+            IsOpenSettings = false;
+
+            var dialog = new SettingsDialog();
+            await dialog.ShowAsync();
         }
 
 

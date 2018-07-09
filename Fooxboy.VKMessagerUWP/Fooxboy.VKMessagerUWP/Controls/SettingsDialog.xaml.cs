@@ -35,5 +35,7 @@ namespace Fooxboy.VKMessagerUWP.Controls
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
         }
+
+        
     }
 }

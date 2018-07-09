@@ -15,11 +15,16 @@ namespace Fooxboy.VKMessagerUWP
         public async static Task<string> Dowload(string url, string name)
         {
             if (url is null) throw new Exception("Картинка - нулл");
-            var item = await StaticContent.LocalFolder.TryGetItemAsync("cacheImage");
+            var cache = (StorageFolder)await StaticContent.LocalFolder.TryGetItemAsync("Cache");
+            var databases = (StorageFolder)await StaticContent.LocalFolder.TryGetItemAsync("Databases");
+            var item = await cache.TryGetItemAsync("Images");
+
             StorageFolder folderImage;
+            StorageFolder itemDBImages;
             if (item is null)
             {
-                folderImage = await StaticContent.LocalFolder.CreateFolderAsync("cacheImage");
+                folderImage = await cache.CreateFolderAsync("Images");
+                itemDBImages = await databases.CreateFolderAsync("Images");
             }
             else
             {
@@ -41,7 +46,7 @@ namespace Fooxboy.VKMessagerUWP
             {
                 imageFile = (StorageFile)itemFile;
             }
-            return $"ms-appdata:///local/cacheImage/{name}";
+            return $"ms-appdata:///local/Cache/Images/{name}";
         }
     }
 }

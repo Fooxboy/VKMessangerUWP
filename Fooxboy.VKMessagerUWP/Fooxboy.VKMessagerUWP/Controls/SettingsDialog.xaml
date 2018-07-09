@@ -5,15 +5,19 @@
     xmlns:local="using:Fooxboy.VKMessagerUWP.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Fooxboy.VKMessagerUWP.Converters"
+    xmlns:models="using:Fooxboy.VKMessagerUWP.Model"
     mc:Ignorable="d"
     Title="Настройки"
     Foreground="Black"
+    SecondaryButtonStyle="{StaticResource ButtonUnLoginStyle}"
     Background="{ThemeResource AcrylicLoginGrid}"
-    SecondaryButtonText="Сохранить"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonText="Закрыть"
+    Opened="{x:Bind VM.ContentDialog_Opened}"
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
     <ContentDialog.Resources>
+       
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/Buttons.xaml"/>
@@ -22,57 +26,153 @@
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/ListViews.xaml"/>
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/Flyouts.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:BooleanToVisibilityInvConverter x:Key="ToBoolean"/>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    
-    <ScrollViewer>
-        <Grid >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        </Grid.RowDefinitions>
 
-            <Ellipse Grid.Column="0" HorizontalAlignment="Center"
-                     VerticalAlignment="Center"
-                     Grid.Row="0" Width="50" 
-                     Height="50">
-                <Ellipse.Fill>
-                    <ImageBrush>
-                        <ImageBrush.ImageSource>
-                            <BitmapImage UriSource="{x:Bind VM.Photo, Mode=TwoWay}"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Style="{StaticResource ButtonUnLoginStyle}"
+                Margin="10 0 0 0"
+                Width="90"
+                Command="{x:Bind VM.UnLoginCommand}"
+                Grid.Column="2" Grid.Row="0" Content="Выйти"/>
+
+        <TextBlock Text="Вы вошли как" 
+                   Margin="0 7 0 0"
+                   Visibility="{x:Bind VM.VisibForYouText}"
+                   Foreground="#424242"
+                   FontSize="12"
+                   HorizontalAlignment="Left"
+                   Grid.Column="1" 
+                   Grid.Row="0"/>
+        
+        <TextBlock Foreground="Black" 
+                   HorizontalAlignment="Left"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Text="{x:Bind VM.Name, Mode=TwoWay}" Grid.Column="1" 
+                   Grid.Row="0"/>
+
+        <ProgressRing Grid.Row="0" Grid.ColumnSpan="2"
+                      HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"
+                      Foreground="#0078D7"
+                      Height="50" Width="50"
+                      IsActive="{x:Bind VM.IsLoading, Mode=TwoWay}"/>
+
+        <Ellipse Width="50" HorizontalAlignment="Left" Grid.Column="0"  Grid.Row="0" Height="50">
+            <Ellipse.Fill>
+                <ImageBrush>
+                    <ImageBrush.ImageSource>
+                        <BitmapImage UriSource="{x:Bind VM.Photo, Mode=TwoWay}"
                                                      DecodePixelHeight="50"
                                                      DecodePixelWidth="50"
                                                      />
-                        </ImageBrush.ImageSource>
-                    </ImageBrush>
-                </Ellipse.Fill>
-            </Ellipse>
+                    </ImageBrush.ImageSource>
+                </ImageBrush>
+            </Ellipse.Fill>
+        </Ellipse>
 
-            <TextBlock Text="{x:Bind Name}"
-                       Grid.Row="0" 
-                       FontWeight="Bold"
-                       Margin="5 0 0 0" 
-                       Grid.Column="1" 
-                       Foreground="Black"/>
+        <Rectangle Fill="#424242" Grid.ColumnSpan="3" Grid.Row="1" Height="1"/>
+        <TextBlock Text="Кэш"
+                   FontWeight="SemiBold"
+                   Margin="0 10 0 0"
+                   FontSize="17"
+                   
+                   Grid.ColumnSpan="3" 
+                   Grid.Row="2"/>
 
-            <Button Grid.Column="1" 
-                    Style="{StaticResource AccentButtonStyle}"
-                    Grid.Row="1
-                    " Content="Выйти из аккаунта"/>
-            
-            <Button Grid.Column="1"
-                    Style="{StaticResource AccentButtonStyle}" 
-                    Grid.Row="2"
-                    Margin="0 10 0 0"
-                    Content="Очистить кэш"/>
+        <TextBlock Text="Объём сохранённых изображений: " 
+                   Margin="10 40 0 0"
+                   Grid.ColumnSpan="3" 
+                   Grid.Row="2"/>
 
-        </Grid>
-    </ScrollViewer>
+        <TextBlock Text="{x:Bind VM.SizeCachePhoto, Mode=TwoWay}" 
+                   Margin="260 40 0 0"
+                   Grid.ColumnSpan="3" 
+                   Grid.Row="2"/>
+        <Button Grid.ColumnSpan="3"
+                Style="{StaticResource ButtonSettingsStyle}" 
+                Foreground="Black"
+                Height="30"
+                Grid.Row="3" 
+                Content="Очистить кэш">
+            <Button.Flyout>
+                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutNewMessage}">
+                    <Grid HorizontalAlignment="Stretch" Height="300" VerticalAlignment="Stretch" Width="300">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="70"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Margin="10 0 0 0" Foreground="Black" FontWeight="Bold"  Text="Выберите разделы для удаления"/>
+
+                        <ListView Grid.Row="1"
+                                  ItemsSource="{x:Bind VM.ItemsDelete, Mode=TwoWay}"
+                                  SelectedItem="{x:Bind VM.ItemDeleteCache, Mode=TwoWay}">
+
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel VerticalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:SettingsDeleteCacheItem">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Foreground="Black" Grid.Column="0" Text="{x:Bind Title}"/>
+                                        <TextBlock Foreground="Black" Grid.Column="1" Text="{x:Bind Size}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <Button Grid.Row="2"
+                                Command="{x:Bind VM.DeleteCacheCommand}" 
+                                Width="140"
+                                Margin="0 0 15 0"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource ButtonUnLoginStyle}"
+                                Content="Удалить"/>
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        <Button Style="{StaticResource ButtonSettingsStyle}" Grid.ColumnSpan="3"
+                Margin="120 0 0 0"
+                Foreground="Black"
+                Height="30"
+                Grid.Row="3" 
+                Content="Настройки кэширования">
+            <Button.Flyout>
+                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutNewMessage}">
+                    <Grid HorizontalAlignment="Stretch" Height="100" VerticalAlignment="Stretch" Width="100">
+                        
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </Grid>
 </ContentDialog>

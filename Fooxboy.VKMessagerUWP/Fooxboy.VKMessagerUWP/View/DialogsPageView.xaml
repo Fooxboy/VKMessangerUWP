@@ -412,7 +412,7 @@
 
             <ToggleButton Style="{StaticResource ButtonBarDialogsStyle}"
                           Margin="10 0 10 0"
-                          
+                          Command="{x:Bind ViewModel.OpenSettingsCommand}"
                           IsChecked="{x:Bind ViewModel.IsOpenSettings, Mode=TwoWay}"
                     Content="&#xE713;" Grid.Column="2"/>
         </Grid>
