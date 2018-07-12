@@ -56,8 +56,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
         }
 
-        private string _photo = "ms-appx:///Images/PhotoUser.jpg";
-        public string Photo
+        private Uri _photo = new Uri("ms-appx:///Images/PhotoUser.jpg");
+        public Uri Photo
         {
             get => _photo;
             set
@@ -112,7 +112,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         {
             IsLoading = true;
             var user = await VK.Methods.Users.Me(fields: "photo_100");
-            Photo = "ms-appx:///Images/PhotoUser.jpg";
+            Photo = new Uri("ms-appx:///Images/PhotoUser.jpg");
             Name = $"{user.first_name} {user.last_name}";
             Photo = await DownloaderImages.Dowload(user.photo_100, $"user_{user.id}_100.jpg");
             SizeCachePhoto = "вычисление....";

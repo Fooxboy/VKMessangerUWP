@@ -137,7 +137,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             MaxFriends = friends.count;
             foreach (var friend in friends.items)
             {
-                string name, body, photo = string.Empty;
+                string name, body = string.Empty;
+                Uri photo;
                 Visibility online = Visibility.Collapsed;
 
                 name = $"{friend.first_name} {friend.last_name}";
@@ -248,6 +249,113 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             get => _openSettingsCommand = _openSettingsCommand ?? new RelayCommand(async () => await OpenSettings());
         }
 
+        private RelayCommand _openNewMessageCommand;
+        public RelayCommand OpenNewMessageCommand
+        {
+            get => _openNewMessageCommand = _openNewMessageCommand ?? new RelayCommand(async () => await OpenNewMessage());
+        }
+
+        private async Task OpenNewMessage()
+        {
+            if (_itemsFriends != null) return;
+            else
+            {
+                ItemsFriends = new ObservableCollection<FriendItem>();
+
+                IsLoadingFriendsNewMessage = true;
+                var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
+                MaxFriends = friends.count;
+                foreach (var friend in friends.items)
+                {
+                    string name, body = string.Empty;
+                    Uri photo;
+                    Visibility online = Visibility.Collapsed;
+
+                    name = $"{friend.first_name} {friend.last_name}";
+                    photo = await DownloaderImages.Dowload(friend.photo_100, $"user_{friend.id}_100.jpg");
+
+                    if (friend.deactivated == null || friend.deactivated != "deleted" || friend.deactivated != "banned")
+                    {
+                        if (friend.online == 1)
+                        {
+                            online = Visibility.Visible;
+                            if (friend.online_mobile == 1)
+                            {
+                                body = $"Онлайн с {Converts.LastSeenPlatform(friend.last_seen.platform)}";
+                            }
+                            else
+                            {
+                                body = $"Онлайн с компьютера";
+                            }
+
+                        }
+                        else
+                        {
+                            var date = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(friend.last_seen.time);
+                            string time;
+                            bool m = false;
+                            if (date.Day == DateTime.Now.Day)
+                            {
+                                m = true;
+                                string hour = string.Empty;
+                                string minute = string.Empty;
+                                if (date.Hour.ToString().Length == 1)
+                                {
+                                    hour = $"0{date.Hour}";
+                                }
+                                else
+                                {
+                                    hour = date.Hour.ToString();
+                                }
+                                if (date.Minute.ToString().Length == 1)
+                                {
+                                    minute = $"0{date.Minute}";
+                                }
+                                else
+                                {
+                                    minute = date.Minute.ToString();
+                                }
+                                time = $"{hour}:{minute}";
+                            }
+                            else
+                            {
+                                time = $"{date.Day} {Converts.Month(date.Month)}";
+                            }
+
+                            if (friend.sex == 1)
+                            {
+                                if (m) body = $"Была в сети в {time}";
+                                else body = $"Была в сети {time}";
+                            }
+                            else
+                            {
+                                if (m) body = $"Был в сети в {time}";
+                                else body = $"Был в сети {time}";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        body = "Страница удалена или заблокирована";
+                    }
+
+
+                    var elementFriend = new FriendItem()
+                    {
+                        Body = body,
+                        Friend = friend,
+                        Name = name,
+                        Online = online,
+                        PhotoUrl = photo
+                    };
+
+                    ItemsFriends.Add(elementFriend);
+                }
+
+                IsLoadingFriendsNewMessage = false;
+            }
+        }
+
 
         private async Task OpenSettings()
         {
@@ -320,7 +428,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
             var collection = new ObservableCollection<DialogsElementModel>();
 
-            var dialogs = await VK.Methods.Conversations.List(20, ItemsDialogs.Count);
+            var dialogs = await VK.Methods.Conversations.List(50, ItemsDialogs.Count);
 
             maxCount = (int)dialogs.count;
             
@@ -399,7 +507,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 string body = string.Empty;
                 string name = string.Empty;
                 long id = 0;
-                string photoUrl = "ms-appx:///Images/PhotoUser.jpg";
+                Uri photoUrl = new Uri("ms-appx:///Images/PhotoUser.jpg");
                 long countUnread = 0;
                 Visibility visibleUnread = Visibility.Collapsed;
                 Visibility muteNotifications = Visibility.Collapsed;
@@ -577,6 +685,9 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                             body = body.Substring(0, 60) + "...";
                         }
                     }
+                }else if(item.last_message.fwd_messages != null)
+                {
+                    body = $"{item.last_message.fwd_messages.Count} пересланных сообщений";
                 }
                 else
                 {
@@ -696,7 +807,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                     element.Title = $"{user.first_name} {user.last_name}";
 
-                    if (element.PhotoUrl == "ms-appx:///Images/PhotoUser.jpg")
+                    if (element.PhotoUrl == new Uri("ms-appx:///Images/PhotoUser.jpg"))
                     {
                         element.PhotoUrl = await DownloaderImages.Dowload(user.photo_100, $"user_{user.id}_100.jpg");
                     }
@@ -716,7 +827,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                     element.Title = group.name;
 
-                    if (element.PhotoUrl == "ms-appx:///Images/PhotoUser.jpg")
+                    if (element.PhotoUrl == new Uri("ms-appx:///Images/PhotoUser.jpg"))
                     {
                         element.PhotoUrl = await DownloaderImages.Dowload(group.photo_100, $"group_{group.id}_100.jpg");
                     }
@@ -955,6 +1066,19 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                 _isOpenSettings = value;
                 Changed("IsOpenSettings");
+            }
+        }
+
+        private bool _isLoadingFriendsNewMessage= false;
+        public bool IsLoadingFriendsNewMessage
+        {
+            get => _isLoadingFriendsNewMessage;
+            set
+            {
+                if (value == _isLoadingFriendsNewMessage) return;
+
+                _isLoadingFriendsNewMessage = value;
+                Changed("IsLoadingFriendsNewMessage");
             }
         }
     }

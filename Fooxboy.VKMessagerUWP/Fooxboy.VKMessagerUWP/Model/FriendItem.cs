@@ -10,7 +10,7 @@ namespace Fooxboy.VKMessagerUWP.Model
 {
     public class FriendItem
     {
-        public string PhotoUrl { get; set; }
+        public Uri PhotoUrl { get; set; }
         public string Name { get; set; }
         public Visibility Online { get; set; }
         public string Body { get; set; }

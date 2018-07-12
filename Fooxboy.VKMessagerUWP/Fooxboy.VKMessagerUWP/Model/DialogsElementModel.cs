@@ -9,23 +9,11 @@ using Fooxboy.VKMessagerUWP.VK.Models;
 
 namespace Fooxboy.VKMessagerUWP.Model
 {
-    public class DialogsElementModel : ViewModel.BaseViewModel
+    public class DialogsElementModel
     {
         public long Id { get; set; }
         public ConversationsItem Conversation { get; set; }
-        private string photo_id = string.Empty;
-        public string PhotoUrl
-        {
-            get => photo_id;
-            set
-            {
-                if(value != photo_id)
-                {
-                    Changed("PhotoUrl");
-                    photo_id = value;
-                }        
-            }
-        }
+        public Uri PhotoUrl { get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }

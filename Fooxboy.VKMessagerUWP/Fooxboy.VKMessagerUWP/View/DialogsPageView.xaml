@@ -59,6 +59,7 @@
             <Button Style="{StaticResource ButtonNewMessageStyle}" Grid.Column="1" Content="&#xEB7E;"
                     HorizontalAlignment="Center"
                     Width="32"
+                    Command="{x:Bind ViewModel.OpenNewMessageCommand}"
                     Margin="0 0 7 0"
                     VerticalAlignment="Stretch">
                 <Button.Flyout>
@@ -79,6 +80,13 @@
                                        FontSize="14"
                                        Text="Выберите пользователей, чтобы начать диалог" 
                                        Grid.Row="1" />
+
+                            <ProgressRing Grid.RowSpan="5"
+                                          Width="50"
+                                          Height="50"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          IsActive="{x:Bind ViewModel.IsLoadingFriendsNewMessage}"/>
 
                             <TextBox Style="{StaticResource TextBoxSearchDialogsStyle}" Grid.Row="2" 
                                      HorizontalAlignment="Stretch"
@@ -249,7 +257,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="model:DialogsElementModel">
-                    <Grid Margin="0 5 0 5">
+                    <Grid Margin="0 7 0 7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
@@ -305,7 +313,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0"
                                            x:Name="NameDialogs"
-                                           Foreground="#0078D7"
+                                           Foreground="#333333"
                                            Text="{x:Bind Name, Mode=TwoWay}"/>
                                 <TextBlock Grid.Column="1" Margin="5 0 0 0" Foreground="#424242" Text="{x:Bind Body, Mode=TwoWay}"/>
                             </Grid>
