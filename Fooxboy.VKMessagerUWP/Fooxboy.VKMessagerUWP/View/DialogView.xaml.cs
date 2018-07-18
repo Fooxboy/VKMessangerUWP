@@ -26,12 +26,14 @@ namespace Fooxboy.VKMessagerUWP.View
     public sealed partial class DialogView : Page
     {
         public DialogsViewModel ViewModel { get; set; }
+        public MessagesViewModel VM { get; set; }
 
         public DialogView()
         {
             this.InitializeComponent();
 
             ViewModel = DialogsViewModel.GetVM();
+            VM = MessagesViewModel.GetVM();
             var appView = ApplicationView.GetForCurrentView();
             appView.TitleBar.ButtonForegroundColor = Colors.Black;
         }

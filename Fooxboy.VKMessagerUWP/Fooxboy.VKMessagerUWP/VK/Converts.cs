@@ -33,6 +33,53 @@ namespace Fooxboy.VKMessagerUWP.VK
             }
         }
 
+        public static string ToDateString(DateTime dateTime)
+        {
+            string time = string.Empty;
+
+            if (dateTime.Day == DateTime.Now.Day)
+            {
+                string hour = string.Empty;
+                string minute = string.Empty;
+                if (dateTime.Hour.ToString().Length == 1)
+                {
+                    hour = $"0{dateTime.Hour}";
+                }
+                else
+                {
+                    hour = dateTime.Hour.ToString();
+                }
+                if (dateTime.Minute.ToString().Length == 1)
+                {
+                    minute = $"0{dateTime.Minute}";
+                }
+                else
+                {
+                    minute = dateTime.Minute.ToString();
+                }
+                time = $"{hour}:{minute}";
+            }
+            else
+            {
+                time = $"{dateTime.Day} {Converts.Month(dateTime.Month)}";
+            }
+
+            return time;
+
+        }
+
+        public static string ToDateString(long sec)
+        {
+            var date = ToDateTime(sec);
+            return ToDateString(date);
+        }
+
+        public static DateTime ToDateTime(long sec)
+        {
+            var dateA = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(sec);
+            return dateA;
+        }
+
         public static string Month(int i)
         {
             switch(i)

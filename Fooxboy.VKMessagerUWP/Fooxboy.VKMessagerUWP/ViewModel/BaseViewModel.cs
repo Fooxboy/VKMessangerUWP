@@ -12,9 +12,9 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void Changed([CallerMemberName]string prop = "")
+        public void Changed([CallerMemberName]string name = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

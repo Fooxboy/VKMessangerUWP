@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Fooxboy.VKMessagerUWP.Selectors
 {
-    public class MessageTypeTemplateSelector : DataTemplateSelector
+   /* public class MessageTypeTemplateSelector : DataTemplateSelector
     {
         public DataTemplate MessageByMe { get; set; }
         public DataTemplate MessageByFriend { get; set; }
@@ -26,5 +26,5 @@ namespace Fooxboy.VKMessagerUWP.Selectors
                 return MessageByFriend;
             }
         }
-    }
+    }*/
 }

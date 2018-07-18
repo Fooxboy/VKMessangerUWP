@@ -5,6 +5,7 @@
     xmlns:local="using:Fooxboy.VKMessagerUWP.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:models="using:Fooxboy.VKMessagerUWP.Model"
     mc:Ignorable="d"
     Title="Настройки"
@@ -73,7 +74,18 @@
                       Height="50" Width="50"
                       IsActive="{x:Bind VM.IsLoading, Mode=TwoWay}"/>
 
-        <Ellipse Width="50" HorizontalAlignment="Left" Grid.Column="0"  Grid.Row="0" Height="50">
+
+        <controls:RoundImageEx Width="50" 
+                               HorizontalAlignment="Left" Grid.Column="0"  Grid.Row="0"
+                               CornerRadius="999"
+                               PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
+                               Height="50"
+                               DecodePixelHeight="50"
+                               DecodePixelWidth="50"
+                               Source="{x:Bind VM.Photo, Mode=TwoWay}"
+                               IsCacheEnabled="True"/>
+
+        <!-- <Ellipse Width="50" HorizontalAlignment="Left" Grid.Column="0"  Grid.Row="0" Height="50">
             <Ellipse.Fill>
                 <ImageBrush>
                     <ImageBrush.ImageSource>
@@ -85,6 +97,7 @@
                 </ImageBrush>
             </Ellipse.Fill>
         </Ellipse>
+        -->
 
         <Rectangle Fill="#424242" Grid.ColumnSpan="3" Grid.Row="1" Height="1"/>
         <TextBlock Text="Кэш"

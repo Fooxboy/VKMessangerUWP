@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.VK.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,9 @@ namespace Fooxboy.VKMessagerUWP.Model
 {
     public class MessageElementModel
     {
-        public string Name { get; set; }
-        public long MessageId { get; set; }
-        public long UserFromId { get; set; }
-        public string PhotoUrl { get; set; }
-        public string Body { get; set; }
-        public string Time { get; set; }
-        public bool ByMe { get; set; }
+        public string NameUser { get; set; }
+        public string BodyUser { get; set; }
+        public Uri PhotoUser { get; set; }
+        public string Date { get; set; }
     }
 }

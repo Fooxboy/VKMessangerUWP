@@ -25,20 +25,6 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         {
            _titleText = "Диалоги";
            _isOpenDialogs = true;
-            ItemsMessgages = new ObservableCollection<MessageElementModel>();
-            for (int i = 0; i < 1000; i++)
-            {
-                ItemsMessgages.Add(new MessageElementModel()
-                {
-                    Name = "Имя пользователя",
-                    Body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis mauris nisl, tincidunt a ante ut, fermentum hendrerit nunc. Nam tempus feugiat turpis. Duis a elit orci. Integer vestibulum placerat lorem, eget mattis leo varius in. Nulla fringilla tempor dolor vitae dictum. Proin luctus suscipit lectus, et hendrerit mi facilisis facilisis. Nulla in gravida sapien. Duis tellus tortor, tempor non ornare a, malesuada id purus. Donec semper non ex at luctus. Morbi vel aliquam libero. Ut et urna vel elit elementum aliquam ut nec massa. Pellentesque eget elit ut purus interdum luctus a sit amet neque. Cras congue pellentesque laoreet. Nunc nec augue quam. Donec vitae nisi tristique, sodales velit eu, ullamcorper nisl.",
-                    ByMe = false,
-                    MessageId = i,
-                    PhotoUrl = "ms-appx:///Images/PhotoUser.jpg",
-                    Time = "11:10",
-                    UserFromId = i
-                });
-            }
         }
 
         private static DialogsViewModel Model;
@@ -133,7 +119,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         private async Task GetMoreFriends()
         {
             IsLoadingPage = true;
-            var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
+            var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_50, can_write_private_message, online, last_seen");
             MaxFriends = friends.count;
             foreach (var friend in friends.items)
             {
@@ -142,7 +128,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 Visibility online = Visibility.Collapsed;
 
                 name = $"{friend.first_name} {friend.last_name}";
-                photo = await DownloaderImages.Dowload(friend.photo_100, $"user_{friend.id}_100.jpg");
+                photo = await DownloaderImages.Dowload(friend.photo_50, $"user_{friend.id}_50.jpg");
 
                 if(friend.deactivated == null ||friend.deactivated != "deleted" || friend.deactivated != "banned")
                 {
@@ -224,6 +210,18 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             IsLoadingPage = false;
         }
 
+
+        private Visibility visibilityNoDialogs = Visibility.Collapsed;
+        public Visibility VisibilityNoDialogs
+        {
+            get => visibilityNoDialogs;
+            set
+            {
+                if (value == visibilityNoDialogs) return;
+                visibilityNoDialogs = value;
+                Changed("VisibilityNoDialogs");
+            }
+        }
 
         private Visibility _visibleDialogView = Visibility.Collapsed;
         public Visibility VisibleDialogView
@@ -414,9 +412,9 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             OpenDialogPage();
         }
 
-        public void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        public async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            OpenDialogPage();
+            await OpenDialogPage();
         }
 
         public int maxCount = -1;
@@ -424,14 +422,15 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         public async Task<List<DialogsElementModel>> GetMoreDialogs(CancellationToken token, uint countDialog)
         {
             IsLoadingPage = true;
-            //CoreDispatcher coreDispatcher = Window.Current.Dispatcher;
 
             var collection = new ObservableCollection<DialogsElementModel>();
 
             var dialogs = await VK.Methods.Conversations.List(50, ItemsDialogs.Count);
 
+            if (dialogs.items.Count == 0) VisibilityNoDialogs = Visibility.Visible;
+
             maxCount = (int)dialogs.count;
-            
+           
 
             if (dialogs.unread_count > 0)
             {
@@ -501,6 +500,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             var me = await StaticContent.Me();
             var meId = me.id;
 
+            
+
             foreach (var item in dialogs.items)
             {
                 string title = string.Empty;
@@ -533,7 +534,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     title = item.conversation.chat_settings.title;
                     if (item.conversation.chat_settings.photo != null)
                     {
-                        photoUrl = await DownloaderImages.Dowload(item.conversation.chat_settings.photo.photo_100, $"chat_{id}_100.jpg");
+                        photoUrl = await DownloaderImages.Dowload(item.conversation.chat_settings.photo.photo_50, $"chat_{id}_50.jpg");
                     }
 
                     if (item.last_message.from_id == meId)
@@ -699,34 +700,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     }
                 }
 
-                var dateA = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(item.last_message.date);
-
-                if (dateA.Day == DateTime.Now.Day)
-                {
-                    string hour = string.Empty;
-                    string minute = string.Empty;
-                    if (dateA.Hour.ToString().Length == 1)
-                    {
-                        hour = $"0{dateA.Hour}";
-                    }
-                    else
-                    {
-                        hour = dateA.Hour.ToString();
-                    }
-                    if (dateA.Minute.ToString().Length == 1)
-                    {
-                        minute = $"0{dateA.Minute}";
-                    }
-                    else
-                    {
-                        minute = dateA.Minute.ToString();
-                    }
-                    time = $"{hour}:{minute}";
-                }
-                else
-                {
-                    time = $"{dateA.Day} {Converts.Month(dateA.Month)}";
-                }
+                time = Converts.ToDateString(item.last_message.date);
 
                 string countUnreadStr = string.Empty;
                 if (countUnread > 1000 && countUnread < 1000000)
@@ -798,7 +772,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
             if (listUserIds.Count > 0)
             {
-                userNames = await VK.Methods.Users.Get(listUserIds, fields: "photo_100");
+                userNames = await VK.Methods.Users.Get(listUserIds, fields: "photo_50");
 
                 foreach (var user in userNames)
                 {
@@ -809,7 +783,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                     if (element.PhotoUrl == new Uri("ms-appx:///Images/PhotoUser.jpg"))
                     {
-                        element.PhotoUrl = await DownloaderImages.Dowload(user.photo_100, $"user_{user.id}_100.jpg");
+                        element.PhotoUrl = await DownloaderImages.Dowload(user.photo_50, $"user_{user.id}_50.jpg");
                     }
                     collection.Add(element);
                 }
@@ -829,7 +803,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                     if (element.PhotoUrl == new Uri("ms-appx:///Images/PhotoUser.jpg"))
                     {
-                        element.PhotoUrl = await DownloaderImages.Dowload(group.photo_100, $"group_{group.id}_100.jpg");
+                        element.PhotoUrl = await DownloaderImages.Dowload(group.photo_50, $"group_{group.id}_50.jpg");
                     }
                     collection.Add(element);
                 }
@@ -912,13 +886,16 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         }
 
 
-        private void OpenDialogPage()
+        private async Task OpenDialogPage()
         {
             if(VisibleDialogView == Visibility.Collapsed)
             {
                 VisibleDialogView = Visibility.Visible;
                 VisibleNoSelectDialogView = Visibility.Collapsed;
-            }   
+            }
+
+            var vm = MessagesViewModel.GetVM();
+            await vm.StartLoading(SelectItemDialog);
         }
 
         private LoadingCollection<DialogsElementModel> _itemsDialogs;

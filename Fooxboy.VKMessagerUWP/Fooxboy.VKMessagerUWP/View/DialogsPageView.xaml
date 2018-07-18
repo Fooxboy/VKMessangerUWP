@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="using:Fooxboy.VKMessagerUWP.Model"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -17,6 +18,7 @@
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/Fluent.xaml"/>
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/ListViews.xaml"/>
                 <ResourceDictionary Source="ms-appx:///Resources/Styles/Flyouts.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Template/Images.xaml"/>
             </ResourceDictionary.MergedDictionaries>
            
         </ResourceDictionary>
@@ -113,7 +115,15 @@
                                             </Grid.ColumnDefinitions>
 
                                             <!-- photo users-->
+                                            <controls:RoundImageEx Width="50" 
+                                                                   IsCacheEnabled="False"
+                                                                   CornerRadius="999"
+                                                                   PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
+                                                                   Height="50"
+                                                                   Template="{StaticResource NoLoadIndikatorTemplate}"
+                                                                   Source="{x:Bind PhotoUrl, Mode=TwoWay}"/>
 
+                                            <!--
                                             <Ellipse Width="50" Height="50">
                                                 <Ellipse.Fill>
                                                     <ImageBrush>
@@ -126,6 +136,7 @@
                                                     </ImageBrush>
                                                 </Ellipse.Fill>
                                             </Ellipse>
+                                            -->
 
                                             <Ellipse Width="15" Height="15" 
                                  Margin="30 35 0 0"
@@ -196,6 +207,16 @@
 
                         <!-- photo users-->
 
+                        <controls:RoundImageEx Width="50" 
+                                               CornerRadius="999"
+                                               Height="50"
+                                                                   Template="{StaticResource NoLoadIndikatorTemplate}"
+                                               
+                                               IsCacheEnabled="False"
+                                               Source="{x:Bind PhotoUrl, Mode=TwoWay}"
+                                               PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"/>
+
+                        <!--
                         <Ellipse Width="50" Height="50">
                             <Ellipse.Fill>
                                 <ImageBrush>
@@ -208,6 +229,7 @@
                                 </ImageBrush>
                             </Ellipse.Fill>
                         </Ellipse>
+                        -->
                         
                         <Ellipse Width="15" Height="15" 
                                  Margin="30 35 0 0"
@@ -266,6 +288,16 @@
 
                         <!-- photo users-->
 
+                        <controls:RoundImageEx Width="50" 
+                                               CornerRadius="999"
+                                               PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
+                                               Height="50"
+                                               Template="{StaticResource NoLoadIndikatorTemplate}"
+                                               IsCacheEnabled="False"
+                                               Source="{x:Bind PhotoUrl, Mode=TwoWay}"/>
+
+
+                        <!-- 
                         <Ellipse Width="50" Height="50">
                             <Ellipse.Fill>
                                 <ImageBrush>
@@ -278,9 +310,10 @@
                                 </ImageBrush>
                             </Ellipse.Fill>
                         </Ellipse>
+                        -->
 
                         <!-- Body and text -->
-                        
+
                         <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -291,12 +324,12 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <TextBlock Margin="5 0 0 0" Grid.Row="0" 
                                        Grid.Column="0"
                                        Foreground="Black" FontWeight="Bold"
                                        Text="{x:Bind Title, Mode=TwoWay}"/>
-                            
+
                             <TextBlock Grid.Column="1"
                                        Visibility="{x:Bind MuteNotifications, Mode=TwoWay}"
                                        Text="&#xE198;"
@@ -304,7 +337,7 @@
                                        FontFamily="Segoe MDL2 Assets"
                                        Foreground="Black"/>
 
-                            
+
 
                             <Grid Margin="5 0 0 0" Grid.Row="1" Grid.ColumnSpan="2">
                                 <Grid.ColumnDefinitions>
@@ -375,6 +408,13 @@
                       Width="50" Height="50"
                       Foreground="White"
                       Grid.Row="3"/>
+
+        <TextBlock Foreground="Black"
+                   Visibility="{x:Bind ViewModel.VisibilityNoDialogs, Mode=TwoWay}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Grid.Row="3"
+                   Text="У Вас нет диалогов"/>
 
         <!-- Box-->
         <Grid Grid.Row="4">

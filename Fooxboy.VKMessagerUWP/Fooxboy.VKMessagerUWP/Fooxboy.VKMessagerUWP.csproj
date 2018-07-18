@@ -103,9 +103,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ChatListView.cs" />
+    <Compile Include="Controls\Message.xaml.cs">
+      <DependentUpon>Message.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="DownloaderImages.cs" />
     <Compile Include="Exceptions\AppOfflineException.cs" />
     <Compile Include="Exceptions\CaptchaException.cs" />
@@ -143,6 +148,7 @@
     <Compile Include="ViewModel\AuthViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\DialogsViewModel.cs" />
+    <Compile Include="ViewModel\MessagesViewModel.cs" />
     <Compile Include="ViewModel\SearchViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="View\DialogsPageView.xaml.cs">
@@ -162,6 +168,7 @@
     <Compile Include="VK\Methods\Conversations.cs" />
     <Compile Include="VK\Methods\Friends.cs" />
     <Compile Include="VK\Methods\Groups.cs" />
+    <Compile Include="VK\Methods\Messages.cs" />
     <Compile Include="VK\Methods\Users.cs" />
     <Compile Include="VK\Models\ActionChat.cs" />
     <Compile Include="VK\Models\Attach.cs" />
@@ -195,6 +202,7 @@
     <Compile Include="VK\Models\FriendsList.cs" />
     <Compile Include="VK\Models\Geo.cs" />
     <Compile Include="VK\Models\Group.cs" />
+    <Compile Include="VK\Models\HistoryMessage.cs" />
     <Compile Include="VK\Models\LastSeenUser.cs" />
     <Compile Include="VK\Models\Message.cs" />
     <Compile Include="VK\Models\MilitaryUser.cs" />
@@ -266,6 +274,7 @@
     <Content Include="Images\Background.jpg" />
     <Content Include="Images\PhotoUser.jpg" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Images\PlaceholderImage.jpg" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -279,6 +288,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\Message.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,6 +324,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Template\Images.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Template\TextBoxs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -336,12 +353,20 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.5</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp">
+      <Version>3.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
+      <Version>3.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>3.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Converters\" />
     <Folder Include="Themes\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
