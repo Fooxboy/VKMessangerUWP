@@ -71,13 +71,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         public async Task StartLoading(DialogsElementModel selectDialog)
         {
             Messages = new LoadingCollection<MessageElementModel>();
-            Messages.OnMoreItemsRequested = GetMoreMessages;
             Messages.HasMoreItemsRequested = () =>
             {
                 if (maxCount == 0) return false;
                 else if (maxCount == -1) return true;
                 else return Messages.Count < maxCount;
             };
+            Messages.OnMoreItemsRequested = GetMoreMessages;
+           
             try
             {
                 pinnedMessage = selectDialog.Conversation.conversation.chat_settings.pinned_message;
@@ -93,7 +94,6 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         private async Task<List<MessageElementModel>> GetMoreMessages(CancellationToken token, uint countDialog)
         {
             IsLoading = true;
-            VisibleListView = Visibility.Collapsed;
             var history = await VK.Methods.Messages.History(offset: Messages.Count, peer_id: peerId, count: 50, fields: "photo_50");
             maxCount = history.count;
             List<MessageElementModel> list = new List<MessageElementModel>();
@@ -108,15 +108,13 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                 list.Add(new MessageElementModel()
                 {
-                    BodyUser = msg.text,
+                    BodyMessage = msg.text,
                     PhotoUser = photo,
                     Date = VK.Converts.ToDateString(msg.date),
                     NameUser = $"{user.first_name} {user.last_name}"
                 });
             }
             IsLoading = false;
-            VisibleListView = Visibility.Visible;
-            var a = Messages;
             return list;
         }
 

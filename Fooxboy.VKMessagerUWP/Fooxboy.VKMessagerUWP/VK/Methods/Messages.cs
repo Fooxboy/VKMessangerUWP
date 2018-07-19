@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.VK.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Fooxboy.VKMessagerUWP.VK.Methods
 {
     public static class Messages
     {
-        public async static Task<Models.HistoryMessage> History(long user_id =0, long peer_id = 0, int offset=0, int count=0, int start_message_id=0, int rev=1, int extended =1, string fields = "", long group_id=0)
+        public async static Task<HistoryMessage> History(long user_id =0, long peer_id = 0, int offset=0, int count=0, int start_message_id=0, int rev=1, int extended =1, string fields = "", long group_id=0)
         {
             Dictionary<string, string> parametrs = new Dictionary<string, string>()
             {
@@ -24,6 +25,18 @@ namespace Fooxboy.VKMessagerUWP.VK.Methods
             };
 
             var result = await Call<Models.HistoryMessage>.Method("messages.getHistory", parametrs);
+            return result;
+        }
+
+        public async static Task<LongPollServer> LongPoll(int need_pts=0, long group_id=0, int lp_version=3)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>()
+            {
+                ["need_pts"] = need_pts.ToString(),
+                ["group_id"] = group_id.ToString(),
+                ["lp_version"] = lp_version.ToString()
+            };
+            var result = await Call<LongPollServer>.Method("messages.getLongPollServer", parameters);
             return result;
         }
     }

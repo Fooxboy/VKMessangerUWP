@@ -84,7 +84,8 @@ namespace Fooxboy.VKMessagerUWP.Controls
             var panel = this.ItemsPanelRoot as ItemsStackPanel;
             if (panel != null)
             {
-                if ((panel.FirstVisibleIndex != -1 && panel.FirstVisibleIndex * this.averageContainerHeight < actualHeight * this.IncrementalLoadingThreshold) ||
+                if ((panel.FirstVisibleIndex != -1 && 
+                    panel.FirstVisibleIndex * this.averageContainerHeight < actualHeight * this.IncrementalLoadingThreshold) ||
                     (Items.Count == 0))
                 {
                     var virtualizingDataSource = this.ItemsSource as ISupportIncrementalLoading;

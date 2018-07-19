@@ -10,7 +10,7 @@ namespace Fooxboy.VKMessagerUWP.Model
     public class MessageElementModel
     {
         public string NameUser { get; set; }
-        public string BodyUser { get; set; }
+        public string BodyMessage { get; set; }
         public Uri PhotoUser { get; set; }
         public string Date { get; set; }
     }

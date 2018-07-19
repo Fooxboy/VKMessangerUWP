@@ -108,24 +108,26 @@
 
 
             <!-- Messages Frame -->
-            
             <Grid Grid.RowSpan="3" Grid.ColumnSpan="3" Background="White"/>
 
-            <myControls:ChatListView ItemsSource="{x:Bind VM.Messages}"
+            <myControls:ChatListView ItemsSource="{x:Bind VM.Messages,  Mode=TwoWay}"
                                      Visibility="{x:Bind VM.VisibleListView, Mode=TwoWay}"
+                                     IncrementalLoadingThreshold="5"
                                      Grid.RowSpan="3" Grid.ColumnSpan="3"
                                      ItemContainerStyle="{StaticResource ItemContainerStyle}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="model:MessageElementModel">
-                        <myControls:Message MessageInstanse="{x:Bind MessageInstanse}"
-                                            PhotoUser="{x:Bind PhotoUser}"
-                                            User="{x:Bind User}"/>
+                        <myControls:Message  
+                            Date ="{x:Bind Date, Mode=TwoWay}"
+                            TextMessage="{x:Bind BodyMessage, Mode=TwoWay}"
+                            ImageUserUrl="{x:Bind PhotoUser, Mode=TwoWay}"
+                            NameUser="{x:Bind NameUser, Mode=TwoWay}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
 
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsStackPanel VerticalAlignment="Bottom" />
+                        <ItemsStackPanel VerticalAlignment="Stretch" ItemsUpdatingScrollMode="KeepLastItemInView"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
 

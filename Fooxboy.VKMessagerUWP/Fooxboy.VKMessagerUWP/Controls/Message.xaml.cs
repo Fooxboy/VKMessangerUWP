@@ -21,8 +21,8 @@ namespace Fooxboy.VKMessagerUWP.Controls
 {
     public sealed partial class Message : UserControl
     {
-        public static readonly DependencyProperty SourceImageProperty =
-            DependencyProperty.Register("ImageUser", typeof(Uri), typeof(Message), new PropertyMetadata(new Uri("ms-appx:///Images/PhotoUser.jpg"), (d, e) =>
+        public static readonly DependencyProperty ImageUserUrlProperty =
+            DependencyProperty.Register("ImageUserUrl", typeof(Uri), typeof(Message), new PropertyMetadata(new Uri("ms-appx:///Images/PhotoUser.jpg"), (d, e) =>
             {
                 var control = (Message)d;
                 if (e.OldValue == null || e.NewValue == null || !e.OldValue.Equals(e.NewValue)) return;
@@ -33,7 +33,7 @@ namespace Fooxboy.VKMessagerUWP.Controls
             }));
 
         public static readonly DependencyProperty NameUserProperty =
-            DependencyProperty.Register("NameUser", typeof(string), typeof(Message), new PropertyMetadata("", (d, e) =>
+            DependencyProperty.Register("NameUser", typeof(string), typeof(Message), new PropertyMetadata(null, (d, e) =>
             {
                 var control = (Message)d;
                 if (e.OldValue == null || e.NewValue == null || !e.OldValue.Equals(e.NewValue)) return;
@@ -41,8 +41,8 @@ namespace Fooxboy.VKMessagerUWP.Controls
                 control.SetName(newName);
             }));
 
-        public static readonly DependencyProperty BodyMessageProperty =
-            DependencyProperty.Register("BodyText", typeof(string), typeof(Message), new PropertyMetadata("", (d, e) =>
+        public static readonly DependencyProperty TextMessageProperty =
+            DependencyProperty.Register("TextMessage", typeof(string), typeof(Message), new PropertyMetadata(null, (d, e) =>
             {
                 var control = (Message)d;
                 if (e.OldValue == null || e.NewValue == null || !e.OldValue.Equals(e.NewValue)) return;
@@ -50,8 +50,8 @@ namespace Fooxboy.VKMessagerUWP.Controls
                 control.SetBody(newBody);
             }));
 
-        public static readonly DependencyProperty DateMessagePropery =
-            DependencyProperty.Register("Date", typeof(string), typeof(Message), new PropertyMetadata("", (d, e) =>
+        public static readonly DependencyProperty DateProperty =
+            DependencyProperty.Register("Date", typeof(string), typeof(Message), new PropertyMetadata(null, (d, e) =>
             {
                 var control = (Message)d;
                 if (e.OldValue == null || e.NewValue == null || !e.OldValue.Equals(e.NewValue)) return; 
@@ -72,25 +72,26 @@ namespace Fooxboy.VKMessagerUWP.Controls
         }
         public string Date
         {
-            get => (string)GetValue(DateMessagePropery);
-            set => SetValue(DateMessagePropery, value);
+            get => (string)GetValue(DateProperty);
+            set => SetValue(DateProperty, value);
         }
 
         public string TextMessage
         {
-            get => (string)GetValue(BodyMessageProperty);
-            set => SetValue(BodyMessageProperty, value);
+            get => (string)GetValue(TextMessageProperty);
+            set => SetValue(TextMessageProperty, value);
         }
 
-        public Uri PhotoUser
+        public Uri ImageUserUrl
         {
-            get => (Uri)GetValue(SourceImageProperty);
-            set => SetValue(SourceImageProperty, value);
+            get => (Uri)GetValue(ImageUserUrlProperty);
+            set => SetValue(ImageUserUrlProperty, value);
         }
 
         public Message()
         {
             this.InitializeComponent();
+            int a = 0;
         }
     }
 }
