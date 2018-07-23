@@ -269,7 +269,7 @@
                   Style="{StaticResource ListViewDialogsStyle}" 
                   Margin="0 5 0 0"
                   Grid.Row="3"
-                  ItemsSource="{x:Bind ViewModel.ItemsDialogs}">
+                  ItemsSource="{x:Bind ViewModel.ItemsDialogs, Mode=TwoWay}">
 
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -354,7 +354,7 @@
                         </Grid>
 
 
-                        <TextBlock Text="{x:Bind Time}"
+                        <TextBlock Text="{x:Bind Time, Mode=TwoWay}"
                                    FontSize="12"
                                    
                                    Foreground="#383838"

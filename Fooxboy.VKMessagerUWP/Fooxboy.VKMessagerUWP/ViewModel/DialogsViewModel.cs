@@ -21,10 +21,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 {
     public class DialogsViewModel :BaseViewModel
     {
+        LongPollService longPollService;
+
         private DialogsViewModel()
         {
            _titleText = "Диалоги";
            _isOpenDialogs = true;
+            var longpollservice = new LongPollService();
+            longPollService = longpollservice;
         }
 
         private static DialogsViewModel Model;
@@ -871,8 +875,53 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         }
 
             
+        private async void AddedNewMessageDialogs(VK.Models.LongPoll.AddNewMsgModel arg)
+        {
+            if(ItemsDialogs.Count != 0)
+            {
+                string text = arg.Text;
+                long id;
+                long userSend;
+                bool isDialog = false;
+                if (arg.Attachments.from == 0)
+                {
+                    id = arg.PeerId;
+                    isDialog = true;
+                    userSend = 0;
+                }
+                else
+                {
+                    id = arg.PeerId - 2000000000;
+                    if (id < 0) id = Int64.Parse(arg.PeerId.ToString().Replace("-", ""));
+                    userSend = arg.Attachments.from;
+                }
+                var time = Converts.ToDateString(arg.Time);
+                var elements = ItemsDialogs.Where(u => u.Id == id);
+                if(elements.Count() > 0)
+                {
+                    var element = elements.First();
+                    var index = ItemsDialogs.IndexOf(element);
+                    if(isDialog)
+                    {
+                        element.Body = text;
+                    }else
+                    {
+                        var name = (await VK.Methods.Users.Get(new List<long> { userSend })).First().first_name;
+                        element.Name = name;
+                        element.Body = text;
+                    }
+                    ItemsDialogs.RemoveAt(index);
+                    ItemsDialogs.Insert(0, element);
+                }
+
+            }
+        }
+
         public async Task GetDialogs()
         {
+            if(!longPollService.IsRunning) await longPollService.RunAsync();
+
+            longPollService.AddNewMsgEvent += AddedNewMessageDialogs;
             VisibleListView = Visibility.Visible;
             VisibleListViewFriends = Visibility.Collapsed;
             ItemsDialogs = new LoadingCollection<DialogsElementModel>();

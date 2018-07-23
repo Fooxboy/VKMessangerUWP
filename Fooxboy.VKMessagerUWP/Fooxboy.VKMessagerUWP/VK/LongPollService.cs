@@ -37,12 +37,15 @@ namespace Fooxboy.VKMessagerUWP.VK
         public event Delegates.UnReadMessageCounterDelegate UnReadMessageCounterEvent;
         public event Delegates.NotificationSettingsChangedDelegate NotificationSettingsChangedEvent;
 
+        public bool IsRunning { get; set; }
+
         public string Server;
         public string Key;
         public long Ts;
 
         public async Task RunAsync()
         {
+            IsRunning = true;
             if(Server is null)
             {
                 var modelServer = await Messages.LongPoll();
@@ -51,7 +54,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                 Ts = modelServer.ts;
             }
 
-            while (true)
+            while (IsRunning)
             {
                 //Делаем запрос к серверу ВКонтакте.
                 string json = await Request();
@@ -315,6 +318,8 @@ namespace Fooxboy.VKMessagerUWP.VK
                     }
                 }
             }
+
+            IsRunning = false;
         }
 
         private async Task<string> Request()

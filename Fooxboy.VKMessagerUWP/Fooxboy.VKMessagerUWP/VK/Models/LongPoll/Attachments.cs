@@ -93,5 +93,7 @@ namespace Fooxboy.VKMessagerUWP.VK.Models.LongPoll
         public long from_admin { get; set; }
         public string source_act { get; set; }
         public long source_mid { get; set; }
+        public long from { get; set; }
+        public string title { get; set; }
     }
 }
