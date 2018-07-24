@@ -56,6 +56,18 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         public int MaxDialogs = 0;
 
+        private FriendItem selectFriend;
+        public FriendItem SelectFriend
+        {
+            get => selectFriend;
+            set
+            {
+                if (selectFriend == value) return;
+
+                selectFriend = value;
+                Changed("SelectFriend");
+            }
+        }
 
         public long MaxFriends = -1;
         private Visibility _visibleListViewFriends = Visibility.Collapsed;
@@ -71,20 +83,6 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
         }
 
-        private FriendItem _selectItemFriend = null;
-        public FriendItem SelectItemFriend
-        {
-            get => _selectItemFriend;
-            set
-            {
-                if (value == _selectItemFriend) return;
-                else
-                {
-                    _selectItemFriend = value;
-                    Changed("SelectItemFriend");
-                }
-            }
-        }
 
         private ObservableCollection<FriendItem> _itemsFriends; 
         public ObservableCollection<FriendItem> ItemsFriends
@@ -107,6 +105,10 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             get => _openFriendsCommand = _openFriendsCommand ?? new RelayCommand( async() => await GetFriends());
         }
 
+        public async void ListViewFriends_Click(object sender, ItemClickEventArgs e)
+        {
+            await GetInfoAboutUser();
+        }
 
         private async Task GetFriends()
         {
@@ -245,6 +247,12 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             get => _OpenDialogsCommand = _OpenDialogsCommand ?? new RelayCommand(async () => await OpenDialogs());
         }
 
+        private RelayCommand _GetInfoCommand;
+        public RelayCommand GetInfoCommand
+        {
+            get => _GetInfoCommand = _GetInfoCommand ?? new RelayCommand(async () => await GetInfoAboutUser());
+        }
+
         private RelayCommand _openSettingsCommand;
         public RelayCommand OpenSettingsCommand
         {
@@ -358,6 +366,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
         }
 
+
+        private async Task GetInfoAboutUser()
+        {
+            if (SelectFriend is null) return;
+            var info = new InfoUserDialog();
+            info.UserId = SelectFriend.Friend.id;
+            await info.ShowAsync();
+        }
 
         private async Task OpenSettings()
         {

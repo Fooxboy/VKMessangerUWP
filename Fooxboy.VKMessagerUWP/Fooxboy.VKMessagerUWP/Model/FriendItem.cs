@@ -15,5 +15,6 @@ namespace Fooxboy.VKMessagerUWP.Model
         public Visibility Online { get; set; }
         public string Body { get; set; }
         public User Friend { get; set; }
+
     }
 }

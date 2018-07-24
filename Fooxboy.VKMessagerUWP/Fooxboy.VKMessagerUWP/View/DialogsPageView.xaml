@@ -184,7 +184,8 @@
 
         <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
                   x:Name="FriendsListView"
-                  SelectedItem="{x:Bind ViewModel.SelectItemFriend, Mode=TwoWay}"
+                  ItemClick="{x:Bind ViewModel.ListViewFriends_Click}"
+                  SelectedItem="{x:Bind ViewModel.SelectFriend, Mode=TwoWay}"
                   Visibility="{x:Bind ViewModel.VisibleListViewFriends, Mode=TwoWay}"
                   Style="{StaticResource ListViewDialogsStyle}" 
                   Margin="0 5 0 0"
