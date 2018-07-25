@@ -1,4 +1,5 @@
-﻿using Fooxboy.VKMessagerUWP.Model;
+﻿using Fooxboy.VKMessagerUWP.Controls;
+using Fooxboy.VKMessagerUWP.Model;
 using Fooxboy.VKMessagerUWP.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,16 @@ namespace Fooxboy.VKMessagerUWP.View
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ViewModel.IsLoadingPage = true;
-            await ViewModel.GetDialogs();
+            //await ViewModel.GetDialogs();
+            try
+            {
+                await ViewModel.GetDialogs();
+            }catch(Exception ex)
+            {
+                var dialog = new ExceptionDialog(ex);
+                await dialog.ShowAsync();
+            }
+            
         }
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)

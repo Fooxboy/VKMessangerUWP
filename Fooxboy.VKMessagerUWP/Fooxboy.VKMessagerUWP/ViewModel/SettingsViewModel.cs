@@ -88,6 +88,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
         }
 
+
         private ObservableCollection<SettingsDeleteCacheItem> _itemsDelete;
         public ObservableCollection<SettingsDeleteCacheItem> ItemsDelete
         {

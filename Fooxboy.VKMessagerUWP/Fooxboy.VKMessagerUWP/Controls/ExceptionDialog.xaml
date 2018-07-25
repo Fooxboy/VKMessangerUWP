@@ -1,0 +1,54 @@
+﻿<ContentDialog
+    x:Class="Fooxboy.VKMessagerUWP.Controls.ExceptionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Fooxboy.VKMessagerUWP.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Foreground="Black"
+    Title="Ошибка"
+    PrimaryButtonText="Продолжить"
+    SecondaryButtonText="Закрыть приложение"
+    SecondaryButtonStyle="{StaticResource ButtonUnLoginStyle}"
+    PrimaryButtonStyle="{StaticResource ButtonSettingsStyle}"
+    Background="{ThemeResource AcrylicLoginGrid}"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+
+    <ContentDialog.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/TextBoxs.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Fluent.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/ListViews.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Resources/Styles/Flyouts.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ContentDialog.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Foreground="Black" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Text="Необработанное исключение:"/>
+        <TextBlock Foreground="Black" FontWeight="Bold" Grid.Row="1" Grid.Column="0" Text="Сообщение:"/>
+        <TextBlock Foreground="Black" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Text="Подробнее:"/>
+        <TextBlock x:Name="Exception" Foreground="Black" Grid.Row="0" Grid.Column="1"/>
+        <TextBlock x:Name="ExceptionMessage" Foreground="Black" Grid.Row="1" Grid.Column="1"/>
+        <TextBox x:Name="TextBox" Grid.Row="3" Grid.ColumnSpan="2"
+                 BorderThickness="0" Foreground="Black" IsReadOnly="True"/>
+    </Grid>
+</ContentDialog>

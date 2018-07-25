@@ -124,11 +124,19 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             VisibleListView = Visibility.Collapsed;
             VisibleListViewFriends = Visibility.Visible;
             ItemsFriends = new ObservableCollection<FriendItem>();
-            await GetMoreFriends();
+            try
+            {
+                await GetMoreFriends();
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
+            }
+            
         }
 
         private async Task GetMoreFriends()
         {
+            if (ItemsFriends is null) ItemsFriends = new ObservableCollection<FriendItem>();
             Logger.Info("Начало получения друзей...");
             IsLoadingPage = true;
             var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_50, can_write_private_message, online, last_seen, deactivated");
@@ -363,7 +371,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 IsOpenFriend = false;
                 IsOpenDialogs = true;
                 IsOpenSettings = false;
-                await GetDialogs();
+                try
+                {
+                    await GetDialogs();
+                }catch(Exception ex)
+                {
+                    await new ExceptionDialog(ex).ShowAsync();
+                }
+                
             }
         }
 
@@ -406,27 +421,32 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         public int maxCount = -1;
         
 
-        private void setBadgeNumber(long num)
+        private async void setBadgeNumber(long num)
         {
+            try
+            {
+                // Get the blank badge XML payload for a badge number
+                XmlDocument badgeXml =
+                     BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 
-            // Get the blank badge XML payload for a badge number
-            XmlDocument badgeXml =
-                 BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+                // Set the value of the badge in the XML to our number
+                XmlElement badgeElement = badgeXml.SelectSingleNode("/badge") as XmlElement;
+                badgeElement.SetAttribute("value", num.ToString());
 
-            // Set the value of the badge in the XML to our number
-            XmlElement badgeElement = badgeXml.SelectSingleNode("/badge") as XmlElement;
-            badgeElement.SetAttribute("value", num.ToString());
+                // Create the badge notification
+                BadgeNotification badge = new BadgeNotification(badgeXml);
 
-            // Create the badge notification
-            BadgeNotification badge = new BadgeNotification(badgeXml);
+                // Create the badge updater for the application
+                BadgeUpdater badgeUpdater =
+                    BadgeUpdateManager.CreateBadgeUpdaterForApplication();
 
-            // Create the badge updater for the application
-            BadgeUpdater badgeUpdater =
-                BadgeUpdateManager.CreateBadgeUpdaterForApplication();
-
-            // And update the badge
-            badgeUpdater.Update(badge);
-
+                // And update the badge
+                badgeUpdater.Update(badge);
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
+            }
+          
         }
 
         public async Task<List<DialogsElementModel>> GetMoreDialogs(CancellationToken token, uint countDialog)
@@ -909,98 +929,118 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             
         private async void AddedNewMessageDialogs(VK.Models.LongPoll.AddNewMsgModel arg)
         {
-            Logger.Info("Начало обработки события нового сообщения...");
-            if(ItemsDialogs.Count != 0)
+            try
             {
-                string text = arg.Text;
-                long id;
-                long userSend;
-                bool isDialog = false;
-                if (arg.Attachments.from == 0)
+                Logger.Info("Начало обработки события нового сообщения...");
+                if (ItemsDialogs.Count != 0)
                 {
-                    id = arg.PeerId;
-                    isDialog = true;
-                    userSend = 0;
-                }
-                else
-                {
-                    id = arg.PeerId - 2000000000;
-                    if (id < 0) id = Int64.Parse(arg.PeerId.ToString().Replace("-", ""));
-                    userSend = arg.Attachments.from;
-                }
-                var time = Converts.ToDateString(arg.Time);
-                var elements = ItemsDialogs.Where(u => u.Id == id);
-                if(elements.Count() > 0)
-                {
-                    var element = elements.First();
-                    var index = ItemsDialogs.IndexOf(element);
-                    if(isDialog)
+                    string text = arg.Text;
+                    long id;
+                    long userSend;
+                    bool isDialog = false;
+                    if (arg.Attachments.from == 0)
                     {
-                        element.Body = text;
-                        element.Time = time;
-                    }else
-                    {
-                        var name = (await VK.Methods.Users.Get(new List<long> { userSend })).First().first_name + ": ";
-                        element.Name = name;
-                        element.Body = text;
-                        element.Time = time;
+                        id = arg.PeerId;
+                        isDialog = true;
+                        userSend = 0;
                     }
-                    element.CountUnread += 1;
-                    ItemsDialogs.RemoveAt(index);
-                    ItemsDialogs.Insert(0, element);
+                    else
+                    {
+                        id = arg.PeerId - 2000000000;
+                        if (id < 0) id = Int64.Parse(arg.PeerId.ToString().Replace("-", ""));
+                        userSend = arg.Attachments.from;
+                    }
+                    var time = Converts.ToDateString(arg.Time);
+                    var elements = ItemsDialogs.Where(u => u.Id == id);
+                    if (elements.Count() > 0)
+                    {
+                        var element = elements.First();
+                        var index = ItemsDialogs.IndexOf(element);
+                        if (isDialog)
+                        {
+                            element.Body = text;
+                            element.Time = time;
+                        }
+                        else
+                        {
+                            var name = (await VK.Methods.Users.Get(new List<long> { userSend })).First().first_name + ": ";
+                            element.Name = name;
+                            element.Body = text;
+                            element.Time = time;
+                        }
+                        element.CountUnread += 1;
+                        ItemsDialogs.RemoveAt(index);
+                        ItemsDialogs.Insert(0, element);
+                    }
                 }
+                Logger.Info("Конец обработки события нового сообщения...");
+            }catch(Exception Ex)
+            {
+                await new ExceptionDialog(Ex).ShowAsync();
             }
-            Logger.Info("Конец обработки события нового сообщения...");
+            
         }
 
         //Набор сообщения в личном диалоге
-        private void TypingInDialog(VK.Models.LongPoll.UserTypingInDialogModel arg)
+        private async void TypingInDialog(VK.Models.LongPoll.UserTypingInDialogModel arg)
         {
-            Logger.Info("Начало обработки события написания в личном диалоге...");
-
-            var id = arg.UserId;
-            if(ItemsDialogs.Count != 0)
+            try
             {
-                var elements = ItemsDialogs.Where(u => u.Id == id);
-                if (elements.Count() > 0)
+                Logger.Info("Начало обработки события написания в личном диалоге...");
+
+                var id = arg.UserId;
+                if (ItemsDialogs.Count != 0)
                 {
-                    var element = elements.First();
-                    var index = ItemsDialogs.IndexOf(element);
-                    ItemsDialogs.RemoveAt(index);
-                    element.Body = "Набирает сообщение...";
-                    ItemsDialogs.Insert(index, element);
-                    //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
+                    var elements = ItemsDialogs.Where(u => u.Id == id);
+                    if (elements.Count() > 0)
+                    {
+                        var element = elements.First();
+                        var index = ItemsDialogs.IndexOf(element);
+                        ItemsDialogs.RemoveAt(index);
+                        element.Body = "Набирает сообщение...";
+                        ItemsDialogs.Insert(index, element);
+                        //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
+                    }
                 }
+                Logger.Info("Конец обработки события написания в личном диалоге...");
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
             }
-            Logger.Info("Конец обработки события написания в личном диалоге...");
+            
 
         }
 
         //Набор сообщения в беседе.
         private async void TypingInChat(VK.Models.LongPoll.UserTypingInChatModel arg)
         {
-            Logger.Info("Начало обработки события написания в чате...");
-
-            var chatid = arg.ChatId - 2000000000;
-            if (chatid < 0) chatid = Int64.Parse(arg.ChatId.ToString().Replace("-", ""));
-            var userid = arg.UserId;
-            if (ItemsDialogs.Count != 0)
+            try
             {
-                var elements = ItemsDialogs.Where(u => u.Id == chatid);
-                if (elements.Count() > 0)
-                {
-                    var element = elements.First();
-                    var index = ItemsDialogs.IndexOf(element);
-                    ItemsDialogs.RemoveAt(index);
-                    element.Body = "набирает сообщение...";
-                    var name = (await VK.Methods.Users.Get(new List<long> { userid })).First().first_name;
-                    element.Name = name;
-                    ItemsDialogs.Insert(index, element);
-                    //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
-                }
-            }
-            Logger.Info("Конец обработки события написания в чате...");
+                Logger.Info("Начало обработки события написания в чате...");
 
+                var chatid = arg.ChatId - 2000000000;
+                if (chatid < 0) chatid = Int64.Parse(arg.ChatId.ToString().Replace("-", ""));
+                var userid = arg.UserId;
+                if (ItemsDialogs.Count != 0)
+                {
+                    var elements = ItemsDialogs.Where(u => u.Id == chatid);
+                    if (elements.Count() > 0)
+                    {
+                        var element = elements.First();
+                        var index = ItemsDialogs.IndexOf(element);
+                        ItemsDialogs.RemoveAt(index);
+                        element.Body = "набирает сообщение...";
+                        var name = (await VK.Methods.Users.Get(new List<long> { userid })).First().first_name;
+                        element.Name = name;
+                        ItemsDialogs.Insert(index, element);
+                        //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
+                    }
+                }
+                Logger.Info("Конец обработки события написания в чате...");
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
+            }
         }
 
         public async Task GetDialogs()
@@ -1017,14 +1057,21 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 else return ItemsDialogs.Count < maxCount;
             };
 
-            Logger.Info("Подписка на события LongPoll");
-            //Подписка на события longpoll'a 
-            longPollService.AddNewMsgEvent += AddedNewMessageDialogs;
-            longPollService.UserTypingInChatEvent += TypingInChat;
-            longPollService.UserTypingInDialogEvent += TypingInDialog;
-            //Запуск longpoll
-            if (!longPollService.IsRunning)
-                await longPollService.RunAsync();
+            try
+            {
+                Logger.Info("Подписка на события LongPoll");
+                //Подписка на события longpoll'a 
+                longPollService.AddNewMsgEvent += AddedNewMessageDialogs;
+                longPollService.UserTypingInChatEvent += TypingInChat;
+                longPollService.UserTypingInDialogEvent += TypingInDialog;
+                //Запуск longpoll
+                if (!longPollService.IsRunning)
+                    await longPollService.RunAsync();
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
+            }
+            
         }
 
         private async Task OpenDialogPage()
@@ -1037,7 +1084,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             }
 
             var vm = MessagesViewModel.GetVM();
-            await vm.StartLoading(SelectItemDialog);
+            try
+            {
+                await vm.StartLoading(SelectItemDialog);
+
+            }catch(Exception e)
+            {
+                await new ExceptionDialog(e).ShowAsync();
+            }
         }
 
         private LoadingCollection<DialogsElementModel> _itemsDialogs;
