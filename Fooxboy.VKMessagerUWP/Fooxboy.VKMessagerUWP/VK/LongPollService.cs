@@ -255,13 +255,14 @@ namespace Fooxboy.VKMessagerUWP.VK
                         }
                         else if (code == 51)
                         {
+                            /*
                             var model = new OneParamChangedModel()
                             {
                                 ChatId = (long)update[1],
                                 Self = (long)update[2]
                             };
                             OneParamChangedEvent?.Invoke(model);
-                            //OneParamChangedEvent?.EndInvoke(a);
+                            //OneParamChangedEvent?.EndInvoke(a);*/
                         }
                         else if (code == 52)
                         {

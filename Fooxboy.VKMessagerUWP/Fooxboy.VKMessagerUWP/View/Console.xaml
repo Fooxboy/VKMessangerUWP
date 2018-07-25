@@ -89,7 +89,7 @@
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
-        <ListView 
+        <ListView ItemContainerStyle="{StaticResource ListViewItemContainerStyle1}"
                   Grid.Row="0" Background="Black" 
                   BorderThickness="0"
                   ItemsSource="{x:Bind VM.ItemsLogs, Mode=TwoWay}">

@@ -1023,8 +1023,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             longPollService.UserTypingInChatEvent += TypingInChat;
             longPollService.UserTypingInDialogEvent += TypingInDialog;
             //Запуск longpoll
-            if (!longPollService.IsRunning) await longPollService.RunAsync();
-            
+            if (!longPollService.IsRunning)
+                await longPollService.RunAsync();
         }
 
         private async Task OpenDialogPage()

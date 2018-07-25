@@ -196,8 +196,9 @@
                 Foreground="Black"
                 Height="30"
                 HorizontalAlignment="Right"
+                Command="{x:Bind VM.TestPushCommand}"
                 Grid.Row="5" 
-                Content="Test Toast">
+                Content="Test Push">
         </Button>
     </Grid>
 </ContentDialog>

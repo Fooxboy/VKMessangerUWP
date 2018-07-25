@@ -5,10 +5,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using Windows.UI.Notifications;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
@@ -201,6 +203,72 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 newViewId = ApplicationView.GetForCurrentView().Id;
             });
             bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+        }
+
+
+        private RelayCommand testPushCommand;
+        public RelayCommand TestPushCommand
+        {
+            get => testPushCommand = testPushCommand ?? new RelayCommand(async () => await TestPush());
+        }
+
+        private async Task TestPush()
+        {
+            var BindingGeneric = new ToastBindingGeneric()
+            {
+                AppLogoOverride = new ToastGenericAppLogo()
+                {
+                    Source = "ms-appx:///Images/PhotoUser.jpg",
+                    HintCrop = ToastGenericAppLogoCrop.Circle
+                },
+                Children =
+                {
+                    new AdaptiveText()
+                    {
+                        Text = "Какой-то текст, который не имеет смысла.",
+                        HintMaxLines =1
+                    },
+                    new AdaptiveText()
+                    {
+                        Text = "Сука блять"
+                    },
+                    new AdaptiveText()
+                    {
+                        Text = "пизда"
+                    }
+                },
+                Attribution = new ToastGenericAttributionText
+                {
+                    Text = "Fooxboy"
+                },
+                
+            };
+
+            ToastContent toastContent = new ToastContent()
+            {
+                Visual = new ToastVisual()
+                {
+                    BindingGeneric = BindingGeneric
+                },
+                Actions = new ToastActionsCustom()
+                {
+                    Buttons =
+                    {
+                        new ToastButton("ОК", "action=viewdetails&contentId=351")
+                        {
+                            ActivationType = ToastActivationType.Foreground
+                        },
+                        new ToastButton("Не ОК", "action=viewdetails&contentId=351")
+                        {
+                            ActivationType = ToastActivationType.Background
+                        }
+                    }
+                }
+                
+            };
+
+            var toast = new ToastNotification(toastContent.GetXml());
+            ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
 
