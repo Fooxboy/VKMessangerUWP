@@ -70,6 +70,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         public async Task StartLoading(DialogsElementModel selectDialog)
         {
+            Logger.Info("Инициализация начала загрузки сообщений");
             Messages = new LoadingCollection<MessageElementModel>();
             Messages.HasMoreItemsRequested = () =>
             {
@@ -93,17 +94,21 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         private async Task<List<MessageElementModel>> GetMoreMessages(CancellationToken token, uint countDialog)
         {
+            Logger.Info("Загрузка сообщений...");
             IsLoading = true;
             var history = await VK.Methods.Messages.History(offset: Messages.Count, peer_id: peerId, count: 50, fields: "photo_50");
             maxCount = history.count;
             List<MessageElementModel> list = new List<MessageElementModel>();
+            Logger.Info($"Старт рендеринга сообщений, количество: {list.Count}");
             foreach(var message in history.items)
             {
+                Logger.Info($"Рендеринг сообщения  id = {message.id}...");
                 User user;
                 Message msg = message;
                 Uri photo;
 
                 user = history.profiles.Find(x => x.id == message.from_id);
+                Logger.Info($"Загрузка изображения для пользователя {user.id}...");
                 photo = await DownloaderImages.Dowload(user.photo_50, $"user_{user.id}_50.jpg");
 
                 list.Add(new MessageElementModel()
@@ -115,12 +120,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 });
             }
             IsLoading = false;
+            Logger.Info("Конец загрузки диалогов");
             return list;
         }
 
 
         public static MessagesViewModel GetVM()
         {
+            Logger.Info("Создание ViewModel для списка сообщений...");
             if(instanse == null)
             {
                 instanse = new MessagesViewModel();

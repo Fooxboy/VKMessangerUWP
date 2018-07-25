@@ -37,6 +37,9 @@ namespace Fooxboy.VKMessagerUWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            Logger.NewLogger();
+            Logger.Info("Создан объект логгера.");
+            Logger.Info("Старт запуска приложения...");
         }
 
         /// <summary>
@@ -47,11 +50,13 @@ namespace Fooxboy.VKMessagerUWP
         protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
+            Logger.Info("Обычный запуск приложения...");
 
             // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
             // только обеспечьте активность окна
             if (rootFrame == null)
             {
+                Logger.Info("Создание главного фрейма");
                 // Создание фрейма, который станет контекстом навигации, и переход к первой странице
                 rootFrame = new Frame();
 
@@ -62,6 +67,7 @@ namespace Fooxboy.VKMessagerUWP
                     //TODO: Загрузить состояние из ранее приостановленного приложения
                 }
 
+                Logger.Info("Настройка Title Bar");
                 CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
 
                 if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
@@ -70,11 +76,13 @@ namespace Fooxboy.VKMessagerUWP
                     appView.TitleBar.ButtonBackgroundColor = Colors.Transparent;
                     appView.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
                 }
+                Logger.Info("Размещение фрейма в текущем окне");
 
                 // Размещение фрейма в текущем окне
                 Window.Current.Content = rootFrame;
             }
 
+            Logger.Info("Создание папки с кэшем");
             //создание папки с кэшем
             var itemFolder = await StaticContent.LocalFolder.TryGetItemAsync("Cache");
             if(itemFolder == null)
@@ -82,6 +90,7 @@ namespace Fooxboy.VKMessagerUWP
                 await StaticContent.LocalFolder.CreateFolderAsync("Cache");
             }
 
+            Logger.Info("Создание папки с базой данных кэшированных картинок");
             //создание папки с базами данных
             var itemFolderDB = await StaticContent.LocalFolder.TryGetItemAsync("Databases");
             if (itemFolderDB == null)
@@ -93,6 +102,7 @@ namespace Fooxboy.VKMessagerUWP
             {
                 if (rootFrame.Content == null)
                 {
+                    Logger.Info("Проверка авторизации пользователя");
                     StaticContent.RootPageSet(rootFrame);
                     var item = await StaticContent.LocalFolder.TryGetItemAsync("Tokens.json");
                     if(item is null) rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
@@ -107,6 +117,8 @@ namespace Fooxboy.VKMessagerUWP
                             if (accounts.Accounts[0].Token is null) rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
                             else
                             {
+                                Logger.Info("Пользователь авторизован");
+
                                 var token = accounts.Accounts[0].Token;
                                // var vk = await StaticContent.GetVk(token);
                                 rootFrame.Navigate(typeof(View.RootView), e.Arguments);
@@ -114,6 +126,7 @@ namespace Fooxboy.VKMessagerUWP
                         }
                         catch
                         {
+                            Logger.Info("Пользователь не авторизован");
                             rootFrame.Navigate(typeof(View.LoginView), e.Arguments);
                         }
                     }

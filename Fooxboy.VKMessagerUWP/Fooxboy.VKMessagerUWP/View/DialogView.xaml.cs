@@ -31,9 +31,10 @@ namespace Fooxboy.VKMessagerUWP.View
         public DialogView()
         {
             this.InitializeComponent();
-
+            Logger.Info("Создание страницы списка диалогов");
             ViewModel = DialogsViewModel.GetVM();
             VM = MessagesViewModel.GetVM();
+            Logger.Info("Настройка Title bar и кнопок...");
             var appView = ApplicationView.GetForCurrentView();
             appView.TitleBar.ButtonForegroundColor = Colors.Black;
         }

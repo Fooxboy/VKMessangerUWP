@@ -10,8 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -25,6 +27,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         private DialogsViewModel()
         {
+            Logger.Info("Начало инициализации данных страницы диалогов...");
            _titleText = "Диалоги";
            _isOpenDialogs = true;
             var longpollservice = new LongPollService();
@@ -107,11 +110,13 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         public async void ListViewFriends_Click(object sender, ItemClickEventArgs e)
         {
+            Logger.Info("Поучение информации о пользователе...");
             await GetInfoAboutUser();
         }
 
         private async Task GetFriends()
         {
+            Logger.Info("Инициализация начала получения друзей");
             TitleText = "Друзья";
             IsOpenDialogs = false;
             IsOpenFriend = true;
@@ -124,20 +129,26 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         private async Task GetMoreFriends()
         {
+            Logger.Info("Начало получения друзей...");
             IsLoadingPage = true;
-            var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_50, can_write_private_message, online, last_seen");
+            var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_50, can_write_private_message, online, last_seen, deactivated");
+            Logger.Info("Начало рендеринга друзей...");
             MaxFriends = friends.count;
+            Logger.Info($"Количество эелементов для рендеринга: {MaxFriends}");
             foreach (var friend in friends.items)
             {
+                Logger.Info($"Начало рендеринга друга id{friend.id}");
                 string name, body = string.Empty;
                 Uri photo;
                 Visibility online = Visibility.Collapsed;
 
                 name = $"{friend.first_name} {friend.last_name}";
+                Logger.Info($"Загрузка изображения друга {name}...");
                 photo = await DownloaderImages.Dowload(friend.photo_50, $"user_{friend.id}_50.jpg");
 
-                if(friend.deactivated == null ||friend.deactivated != "deleted" || friend.deactivated != "banned")
+                if(friend.deactivated is null)
                 {
+                    Logger.Info("Проверка онлайна друга...");
                     if (friend.online == 1)
                     {
                         online = Visibility.Visible;
@@ -149,55 +160,30 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                         {
                             body = $"Онлайн с компьютера";
                         }
-
                     }
                     else
                     {
-                        var date = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(friend.last_seen.time);
+                        Logger.Info("Проверка последнего посещения друга...");
+                        //var date = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(friend.last_seen.time);
                         string time;
-                        bool m = false;
-                        if (date.Day == DateTime.Now.Day)
-                        {
-                            m = true;
-                            string hour = string.Empty;
-                            string minute = string.Empty;
-                            if (date.Hour.ToString().Length == 1)
-                            {
-                                hour = $"0{date.Hour}";
-                            }
-                            else
-                            {
-                                hour = date.Hour.ToString();
-                            }
-                            if (date.Minute.ToString().Length == 1)
-                            {
-                                minute = $"0{date.Minute}";
-                            }
-                            else
-                            {
-                                minute = date.Minute.ToString();
-                            }
-                            time = $"{hour}:{minute}";
-                        }
-                        else
-                        {
-                            time = $"{date.Day} {Converts.Month(date.Month)}";
-                        }
+                        try { time = Converts.ToDateString(friend.last_seen.time); }
+                        catch { time = ""; }
 
                         if (friend.sex == 1)
                         {
-                            if (m) body = $"Была в сети в {time}";
-                            else body = $"Была в сети {time}";
+                            body = $"Была в сети {time}";
                         }
                         else
                         {
-                            if (m) body = $"Был в сети в {time}";
-                            else body = $"Был в сети {time}";
+                            body = $"Был в сети {time}";
                         }
                     }
+                }else if(friend.deactivated == "banned")
+                {
+                    body = "Страница заблокирована";
                 }else
                 {
-                    body = "Страница удалена или заблокирована";
+                    body = "Страница удалена";
                 }
                 
 
@@ -213,6 +199,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 ItemsFriends.Add(elementFriend);
             }
 
+            Logger.Info("Конец рендеринга друзей.");
             IsLoadingPage = false;
         }
 
@@ -267,127 +254,105 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         private async Task OpenNewMessage()
         {
+            Logger.Info("Открытие окна создания нового сообщения");
             if (_itemsFriends != null) return;
-            else
-            {
-                ItemsFriends = new ObservableCollection<FriendItem>();
+            await GetMoreFriends();
+            //if (_itemsFriends != null) return;
+            //else
+            //{
+            //    ItemsFriends = new ObservableCollection<FriendItem>();
 
-                IsLoadingFriendsNewMessage = true;
-                var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
-                MaxFriends = friends.count;
-                foreach (var friend in friends.items)
-                {
-                    string name, body = string.Empty;
-                    Uri photo;
-                    Visibility online = Visibility.Collapsed;
+            //    IsLoadingFriendsNewMessage = true;
+            //    var friends = await VK.Methods.Friends.List(order: "hints", fields: "sex,online,photo_100, can_write_private_message, online, last_seen");
+            //    MaxFriends = friends.count;
+            //    foreach (var friend in friends.items)
+            //    {
+            //        string name, body = string.Empty;
+            //        Uri photo;
+            //        Visibility online = Visibility.Collapsed;
 
-                    name = $"{friend.first_name} {friend.last_name}";
-                    photo = await DownloaderImages.Dowload(friend.photo_100, $"user_{friend.id}_100.jpg");
+            //        name = $"{friend.first_name} {friend.last_name}";
+            //        photo = await DownloaderImages.Dowload(friend.photo_100, $"user_{friend.id}_100.jpg");
 
-                    if (friend.deactivated == null || friend.deactivated != "deleted" || friend.deactivated != "banned")
-                    {
-                        if (friend.online == 1)
-                        {
-                            online = Visibility.Visible;
-                            if (friend.online_mobile == 1)
-                            {
-                                body = $"Онлайн с {Converts.LastSeenPlatform(friend.last_seen.platform)}";
-                            }
-                            else
-                            {
-                                body = $"Онлайн с компьютера";
-                            }
+            //        if (friend.deactivated == null || friend.deactivated != "deleted" || friend.deactivated != "banned")
+            //        {
+            //            if (friend.online == 1)
+            //            {
+            //                online = Visibility.Visible;
+            //                if (friend.online_mobile == 1)
+            //                {
+            //                    body = $"Онлайн с {Converts.LastSeenPlatform(friend.last_seen.platform)}";
+            //                }
+            //                else
+            //                {
+            //                    body = $"Онлайн с компьютера";
+            //                }
 
-                        }
-                        else
-                        {
-                            var date = (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(friend.last_seen.time);
-                            string time;
-                            bool m = false;
-                            if (date.Day == DateTime.Now.Day)
-                            {
-                                m = true;
-                                string hour = string.Empty;
-                                string minute = string.Empty;
-                                if (date.Hour.ToString().Length == 1)
-                                {
-                                    hour = $"0{date.Hour}";
-                                }
-                                else
-                                {
-                                    hour = date.Hour.ToString();
-                                }
-                                if (date.Minute.ToString().Length == 1)
-                                {
-                                    minute = $"0{date.Minute}";
-                                }
-                                else
-                                {
-                                    minute = date.Minute.ToString();
-                                }
-                                time = $"{hour}:{minute}";
-                            }
-                            else
-                            {
-                                time = $"{date.Day} {Converts.Month(date.Month)}";
-                            }
+            //            }
+            //            else
+            //            {
+            //                string time;
+            //                try { time = Converts.ToDateString(friend.last_seen.time); }
+            //                catch { time = "Не определено"; }
+                            
+                           
 
-                            if (friend.sex == 1)
-                            {
-                                if (m) body = $"Была в сети в {time}";
-                                else body = $"Была в сети {time}";
-                            }
-                            else
-                            {
-                                if (m) body = $"Был в сети в {time}";
-                                else body = $"Был в сети {time}";
-                            }
-                        }
-                    }
-                    else
-                    {
-                        body = "Страница удалена или заблокирована";
-                    }
+            //                if (friend.sex == 1)
+            //                {
+            //                    body = $"Была в сети {time}";
+            //                }
+            //                else
+            //                {
+            //                    body = $"Был в сети {time}";
+            //                }
+            //            }
+            //        }
+            //        else
+            //        {
+            //            body = "Страница удалена или заблокирована";
+            //        }
 
 
-                    var elementFriend = new FriendItem()
-                    {
-                        Body = body,
-                        Friend = friend,
-                        Name = name,
-                        Online = online,
-                        PhotoUrl = photo
-                    };
+            //        var elementFriend = new FriendItem()
+            //        {
+            //            Body = body,
+            //            Friend = friend,
+            //            Name = name,
+            //            Online = online,
+            //            PhotoUrl = photo
+            //        };
 
-                    ItemsFriends.Add(elementFriend);
-                }
+            //        ItemsFriends.Add(elementFriend);
+            //    }
 
-                IsLoadingFriendsNewMessage = false;
-            }
+            //    IsLoadingFriendsNewMessage = false;
+            //}
         }
-
 
         private async Task GetInfoAboutUser()
         {
+            Logger.Info("Начало получения информации о пользователе..");
             if (SelectFriend is null) return;
             var info = new InfoUserDialog();
             info.UserId = SelectFriend.Friend.id;
+            Logger.Info("Показ получененной инофрмации о пользователе..");
             await info.ShowAsync();
         }
 
         private async Task OpenSettings()
         {
+            Logger.Info("Инициализация открытия настроек....");
             IsOpenSettings = false;
 
             var dialog = new SettingsDialog();
+            Logger.Info("Показ страницы настроек....");
             await dialog.ShowAsync();
         }
-
 
         private async Task OpenDialogs()
         {
             TitleText = "Диалоги";
-
+            Logger.Info("Инициализация открытия диалогов....");
             if (IsOpenFriend)
             {
                  IsOpenFriend = false;
@@ -434,82 +399,114 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
         public async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
+            Logger.Info("Клик по лист вью");
             await OpenDialogPage();
         }
 
         public int maxCount = -1;
+        
+
+        private void setBadgeNumber(long num)
+        {
+
+            // Get the blank badge XML payload for a badge number
+            XmlDocument badgeXml =
+                 BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+
+            // Set the value of the badge in the XML to our number
+            XmlElement badgeElement = badgeXml.SelectSingleNode("/badge") as XmlElement;
+            badgeElement.SetAttribute("value", num.ToString());
+
+            // Create the badge notification
+            BadgeNotification badge = new BadgeNotification(badgeXml);
+
+            // Create the badge updater for the application
+            BadgeUpdater badgeUpdater =
+                BadgeUpdateManager.CreateBadgeUpdaterForApplication();
+
+            // And update the badge
+            badgeUpdater.Update(badge);
+
+        }
 
         public async Task<List<DialogsElementModel>> GetMoreDialogs(CancellationToken token, uint countDialog)
         {
+            Logger.Info("Начало инициализации получения диалогов");
             IsLoadingPage = true;
 
             var collection = new ObservableCollection<DialogsElementModel>();
 
             var dialogs = await VK.Methods.Conversations.List(50, ItemsDialogs.Count);
 
+            Logger.Info("Начало рендеринга диалогов...");
             if (dialogs.items.Count == 0) VisibilityNoDialogs = Visibility.Visible;
 
             maxCount = (int)dialogs.count;
            
-
-            if (dialogs.unread_count > 0)
+            if(CountUnread != dialogs.unread_count.ToString())
             {
-                var countUnreadAll = string.Empty;
-                var countUnreadAllE = dialogs.unread_count;
-
-                if (countUnreadAllE > 1000 && countUnreadAllE < 1000000)
+                if (dialogs.unread_count > 0)
                 {
-                    var i = countUnreadAllE / 1000;
-                    countUnreadAll = $"{i}K";
-                }
-                else if (countUnreadAllE > 1000000)
-                {
-                    var i = countUnreadAllE / 1000000;
-                    countUnreadAll = $"{i}M";
-                }
-                else
-                {
-                    countUnreadAll = countUnreadAllE.ToString();
-                }
+                    setBadgeNumber(dialogs.unread_count);
 
-                CountUnread = countUnreadAll;
+                    var countUnreadAll = string.Empty;
+                    var countUnreadAllE = dialogs.unread_count;
+
+                    if (countUnreadAllE > 1000 && countUnreadAllE < 1000000)
+                    {
+                        var i = countUnreadAllE / 1000;
+                        countUnreadAll = $"{i}K";
+                    }
+                    else if (countUnreadAllE > 1000000)
+                    {
+                        var i = countUnreadAllE / 1000000;
+                        countUnreadAll = $"{i}M";
+                    }
+                    else
+                    {
+                        countUnreadAll = countUnreadAllE.ToString();
+                    }
+
+                    CountUnread = countUnreadAll;
 
 
-                int widthAll = 25;
-                switch (countUnreadAll.Length)
-                {
-                    case 0:
-                        widthAll = 0;
-                        break;
-                    case 1:
-                        widthAll = 25;
-                        break;
-                    case 2:
-                        widthAll = 30;
-                        break;
-                    case 3:
-                        widthAll = 35;
-                        break;
-                    case 4:
-                        widthAll = 45;
-                        break;
-                    case 5:
-                        widthAll = 55;
-                        break;
-                    case 6:
-                        widthAll = 65;
-                        break;
-                    case 7:
-                        widthAll = 70;
-                        break;
-                    default:
-                        widthAll = 25;
-                        break;
+                    int widthAll = 25;
+                    switch (countUnreadAll.Length)
+                    {
+                        case 0:
+                            widthAll = 0;
+                            break;
+                        case 1:
+                            widthAll = 25;
+                            break;
+                        case 2:
+                            widthAll = 30;
+                            break;
+                        case 3:
+                            widthAll = 35;
+                            break;
+                        case 4:
+                            widthAll = 45;
+                            break;
+                        case 5:
+                            widthAll = 55;
+                            break;
+                        case 6:
+                            widthAll = 65;
+                            break;
+                        case 7:
+                            widthAll = 70;
+                            break;
+                        default:
+                            widthAll = 25;
+                            break;
+                    }
+
+                    WidthUnread = widthAll;
+                    VisibilityUnread = Visibility.Visible;
                 }
-
-                WidthUnread = widthAll;
-                VisibilityUnread = Visibility.Visible;
             }
+            
 
             var listUserIds = new List<long>();
             var listGroupsIds = new List<long>();
@@ -520,10 +517,12 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             var me = await StaticContent.Me();
             var meId = me.id;
 
-            
+            Logger.Info($"Количетво объектов для инициализации: {dialogs.items.Count}");
+
 
             foreach (var item in dialogs.items)
             {
+                Logger.Info($"Инициализация диалога {item.conversation.peer}...");
                 string title = string.Empty;
                 string body = string.Empty;
                 string name = string.Empty;
@@ -786,8 +785,12 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 };
 
                 collection.Add(element);
+                Logger.Info("Конец инициализации диалога.");
             }
 
+            Logger.Info("Конец рендеринга диалогов");
+
+            Logger.Info("Начало получения информации о  пользователей");
             List<User> userNames = null;
 
             if (listUserIds.Count > 0)
@@ -796,6 +799,7 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                 foreach (var user in userNames)
                 {
+                    Logger.Info($"Рендеринг пользователя id{user.id}");
                     var element = collection.Where((u) => u.Id == user.id).FirstOrDefault();
                     collection.Remove(element);
 
@@ -808,7 +812,9 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     collection.Add(element);
                 }
             }
+            Logger.Info("Конец получения информации о  пользователей");
 
+            Logger.Info("Начало получения информации о  группах");
 
             if (listGroupsIds.Count > 0)
             {
@@ -816,6 +822,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
                 foreach (var group in groupsNames)
                 {
+                    Logger.Info($"Рендеринг группы id{group.id}");
+
                     var element = collection.Where((u) => u.Id == group.id).FirstOrDefault();
                     collection.Remove(element);
 
@@ -828,12 +836,16 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     collection.Add(element);
                 }
             }
+            Logger.Info("Конец получения информации о группах");
 
+            Logger.Info("Начало получения информации о именах в чатах.");
 
             if (listNamesUds.Count > 0)
             {
                 foreach (var name in listNamesUds)
                 {
+                    Logger.Info($"Рендеринг имени id{name.Key}");
+
                     if (listUserIds.Any((u) => u == name.Value) && userNames != null)
                     {
                         var element = collection.Where((u) => u.Id == name.Key).FirstOrDefault();
@@ -849,7 +861,6 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     }
                 }
             }
-
 
             if (namesIds.Count > 0)
             {
@@ -870,6 +881,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     }
                 }
             }
+            Logger.Info("Конец получения информации о именах в чатах.");
+
 
             dialogs = null;
             listUserIds = null;
@@ -878,6 +891,8 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
             namesIds = null;
             me = null;
             meId = 0;
+            Logger.Info("Сортировка диалогов по времени..");
+
             var newCollection = collection.OrderByDescending(u => u.Conversation.last_message.date);
             var returnCollecton = new List<DialogsElementModel>();
             foreach (var element in newCollection)
@@ -887,12 +902,14 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
 
             IsLoadingPage = false;
 
+            Logger.Info("Конец загрузки диалогов.");
             return returnCollecton;
         }
 
             
         private async void AddedNewMessageDialogs(VK.Models.LongPoll.AddNewMsgModel arg)
         {
+            Logger.Info("Начало обработки события нового сообщения...");
             if(ItemsDialogs.Count != 0)
             {
                 string text = arg.Text;
@@ -920,24 +937,75 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                     if(isDialog)
                     {
                         element.Body = text;
+                        element.Time = time;
                     }else
                     {
-                        var name = (await VK.Methods.Users.Get(new List<long> { userSend })).First().first_name;
+                        var name = (await VK.Methods.Users.Get(new List<long> { userSend })).First().first_name + ": ";
                         element.Name = name;
                         element.Body = text;
+                        element.Time = time;
                     }
+                    element.CountUnread += 1;
                     ItemsDialogs.RemoveAt(index);
                     ItemsDialogs.Insert(0, element);
                 }
-
             }
+            Logger.Info("Конец обработки события нового сообщения...");
+        }
+
+        //Набор сообщения в личном диалоге
+        private void TypingInDialog(VK.Models.LongPoll.UserTypingInDialogModel arg)
+        {
+            Logger.Info("Начало обработки события написания в личном диалоге...");
+
+            var id = arg.UserId;
+            if(ItemsDialogs.Count != 0)
+            {
+                var elements = ItemsDialogs.Where(u => u.Id == id);
+                if (elements.Count() > 0)
+                {
+                    var element = elements.First();
+                    var index = ItemsDialogs.IndexOf(element);
+                    ItemsDialogs.RemoveAt(index);
+                    element.Body = "Набирает сообщение...";
+                    ItemsDialogs.Insert(index, element);
+                    //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
+                }
+            }
+            Logger.Info("Конец обработки события написания в личном диалоге...");
+
+        }
+
+        //Набор сообщения в беседе.
+        private async void TypingInChat(VK.Models.LongPoll.UserTypingInChatModel arg)
+        {
+            Logger.Info("Начало обработки события написания в чате...");
+
+            var chatid = arg.ChatId - 2000000000;
+            if (chatid < 0) chatid = Int64.Parse(arg.ChatId.ToString().Replace("-", ""));
+            var userid = arg.UserId;
+            if (ItemsDialogs.Count != 0)
+            {
+                var elements = ItemsDialogs.Where(u => u.Id == chatid);
+                if (elements.Count() > 0)
+                {
+                    var element = elements.First();
+                    var index = ItemsDialogs.IndexOf(element);
+                    ItemsDialogs.RemoveAt(index);
+                    element.Body = "набирает сообщение...";
+                    var name = (await VK.Methods.Users.Get(new List<long> { userid })).First().first_name;
+                    element.Name = name;
+                    ItemsDialogs.Insert(index, element);
+                    //TODO: Сделать, что-то, если пользователь набирал сообщение, но не отправил его.
+                }
+            }
+            Logger.Info("Конец обработки события написания в чате...");
+
         }
 
         public async Task GetDialogs()
         {
-            if(!longPollService.IsRunning) await longPollService.RunAsync();
-
-            longPollService.AddNewMsgEvent += AddedNewMessageDialogs;
+            Logger.Info("Инициализации получения диалогов...");
             VisibleListView = Visibility.Visible;
             VisibleListViewFriends = Visibility.Collapsed;
             ItemsDialogs = new LoadingCollection<DialogsElementModel>();
@@ -948,11 +1016,20 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
                 else if (maxCount == -1) return true;
                 else return ItemsDialogs.Count < maxCount;
             };
-        }
 
+            Logger.Info("Подписка на события LongPoll");
+            //Подписка на события longpoll'a 
+            longPollService.AddNewMsgEvent += AddedNewMessageDialogs;
+            longPollService.UserTypingInChatEvent += TypingInChat;
+            longPollService.UserTypingInDialogEvent += TypingInDialog;
+            //Запуск longpoll
+            if (!longPollService.IsRunning) await longPollService.RunAsync();
+            
+        }
 
         private async Task OpenDialogPage()
         {
+            Logger.Info("Инициализация открытия диалогов");
             if(VisibleDialogView == Visibility.Collapsed)
             {
                 VisibleDialogView = Visibility.Visible;

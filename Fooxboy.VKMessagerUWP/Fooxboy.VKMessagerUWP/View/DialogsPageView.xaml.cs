@@ -34,7 +34,7 @@ namespace Fooxboy.VKMessagerUWP.View
         public DialogsPageView()
         {
             this.InitializeComponent();
-
+            Logger.Info("Инициализация страницы с диалогами...");
             ViewModel = DialogsViewModel.GetVM();
             Search = new SearchViewModel();
         }

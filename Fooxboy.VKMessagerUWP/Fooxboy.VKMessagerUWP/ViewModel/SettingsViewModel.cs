@@ -6,8 +6,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
+using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -169,6 +173,34 @@ namespace Fooxboy.VKMessagerUWP.ViewModel
         public RelayCommand DeleteCacheCommand
         {
             get => _deleteCacheCommand = _deleteCacheCommand ?? new RelayCommand(async () => await DeleteCache());
+        }
+
+        private RelayCommand openConsoleCommand;
+        public RelayCommand OpenConsoleCommand
+        {
+            get => openConsoleCommand = openConsoleCommand ?? new RelayCommand(async () => await OpenConsole());
+        }
+
+        private async Task OpenConsole()
+        {
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                frame.Navigate(typeof(View.Console), null);
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                var appView = ApplicationView.GetForCurrentView();
+                appView.TitleBar.BackgroundColor = Colors.Black;
+                appView.TitleBar.ButtonForegroundColor = Colors.White;
+                appView.Title = "Log console";
+                appView.TryResizeView(new Windows.Foundation.Size(300, 200));
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
         }
 
 

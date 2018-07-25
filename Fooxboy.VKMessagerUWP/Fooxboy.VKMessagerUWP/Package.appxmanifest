@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="39634Fooxboy.SpectrumVK" Publisher="CN=61DC74F4-6B71-44B2-9289-5E776494890D" Version="1.1.0.0" />
+  <Identity Name="39634Fooxboy.SpectrumVK" Publisher="CN=61DC74F4-6B71-44B2-9289-5E776494890D" Version="1.1.1.0" />
   <mp:PhoneIdentity PhoneProductId="663f26c1-51f9-46f6-a271-340ad310650c" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>SpectrumVK</DisplayName>

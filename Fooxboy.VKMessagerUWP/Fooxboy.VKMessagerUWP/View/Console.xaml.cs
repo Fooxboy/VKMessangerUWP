@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fooxboy.VKMessagerUWP.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,17 +21,15 @@ namespace Fooxboy.VKMessagerUWP.View
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class RootView : Page
+    public sealed partial class Console : Page
     {
-        public RootView()
+        ConsoleViewModel VM { get; set; }
+
+        public Console()
         {
             this.InitializeComponent();
-            Logger.Info("Создание split фрейма");
-            StaticContent.DialogsFrameSet(FrameDialogs);
-            StaticContent.MessagesFrameSet(FrameMessages);
-            FrameMessages.Navigate(typeof(DialogView));
-            FrameDialogs.Navigate(typeof(DialogsPageView));
-            Logger.Info("Инициализация страниц DialogView и DialogView");
+            VM = new ConsoleViewModel();
+            Logger.Info("Инициализация страницы с консолью");
         }
     }
 }

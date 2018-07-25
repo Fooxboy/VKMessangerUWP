@@ -37,6 +37,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -114,6 +115,9 @@
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\ColorToBrushConverter.cs" />
+    <Compile Include="Converters\DateTimeLogToStringConverter.cs" />
+    <Compile Include="Converters\EnumConsoleToStringConverter.cs" />
     <Compile Include="DownloaderImages.cs" />
     <Compile Include="Exceptions\AppOfflineException.cs" />
     <Compile Include="Exceptions\CaptchaException.cs" />
@@ -134,11 +138,13 @@
     <Compile Include="Exceptions\UserBannedException.cs" />
     <Compile Include="Exceptions\VkException.cs" />
     <Compile Include="LoadingCollection.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Accounts.cs" />
     <Compile Include="Model\Auth.cs" />
+    <Compile Include="Model\ConsoleLogElementModel.cs" />
     <Compile Include="Model\DatabaseCache.cs" />
     <Compile Include="Model\DialogsElementModel.cs" />
     <Compile Include="Model\FriendItem.cs" />
@@ -151,11 +157,15 @@
     <Compile Include="StaticContent.cs" />
     <Compile Include="ViewModel\AuthViewModel.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
+    <Compile Include="ViewModel\ConsoleViewModel.cs" />
     <Compile Include="ViewModel\DialogsViewModel.cs" />
     <Compile Include="ViewModel\InfoUserDialogViewModel.cs" />
     <Compile Include="ViewModel\MessagesViewModel.cs" />
     <Compile Include="ViewModel\SearchViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
+    <Compile Include="View\Console.xaml.cs">
+      <DependentUpon>Console.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DialogsPageView.xaml.cs">
       <DependentUpon>DialogsPageView.xaml</DependentUpon>
     </Compile>
@@ -366,6 +376,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Template\TextBoxs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Console.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

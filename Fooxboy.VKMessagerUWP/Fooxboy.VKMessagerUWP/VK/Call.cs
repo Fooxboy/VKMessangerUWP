@@ -14,13 +14,18 @@ namespace Fooxboy.VKMessagerUWP.VK
        
         public async static Task<T> Method(string method, Dictionary<string, string> parametrs, bool conf = false)
         {
+            Logger.Info($"Обращение к ВКонтакте. Метод: {method}");
             var json = await Request.GetAsync(method, parametrs);
+            Logger.Json(json);
             var response = JsonConvert.DeserializeObject<Response<T>>(json);
+            Logger.Info("Десериализация полученных данных...");
             //проверка на значение по умолчанию
             if(EqualityComparer<T>.Default.Equals(response.response, default(T)))
             {
                 var error = JsonConvert.DeserializeObject<Error>(json);
-                switch(error.error.error_code)
+                Logger.Error($"Произошла ошибка ВКонтакте. Код: {error.error.error_code} Сообщение: {error.error.error_msg}");
+
+                switch (error.error.error_code)
                 {
                     case 1:
                         throw new UnknownErrorException("Попробуйте повторить запрос позже.");
@@ -39,7 +44,10 @@ namespace Fooxboy.VKMessagerUWP.VK
                     case 8:
                         throw new VkException("Проверьте синтаксис запроса и список используемых параметров (его можно найти на странице с описанием метода).");
                     case 9:
-                        throw new MoreRequestException("Нужно сократить число однотипных обращений. Для более эффективной работы Вы можете использовать execute или JSONP.");
+                        Logger.Info("Начало обхода...");
+                        await Task.Delay(1000);
+                        return await Call<T>.Method(method, parametrs, true);
+                        //throw new MoreRequestException("Нужно сократить число однотипных обращений. Для более эффективной работы Вы можете использовать execute или JSONP.");
                     case 10:
                         throw new NativeCoreVkException("Попробуйте повторить запрос позже");
                     case 11:

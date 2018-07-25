@@ -45,9 +45,11 @@ namespace Fooxboy.VKMessagerUWP.VK
 
         public async Task RunAsync()
         {
+            Logger.Info("Старт longpoll...");
             IsRunning = true;
             if(Server is null)
             {
+                Logger.Info("Получение KeyAndServer...");
                 var modelServer = await Messages.LongPoll();
                 Server = modelServer.server;
                 Key = modelServer.key;
@@ -56,14 +58,19 @@ namespace Fooxboy.VKMessagerUWP.VK
 
             while (IsRunning)
             {
+                Logger.Info("Запрос к longpoll серверу ВКонтакте...");
                 //Делаем запрос к серверу ВКонтакте.
                 string json = await Request();
+                Logger.Json(json);
 
                 //Десериализируем ответ
                 var longPollObject = JsonConvert.DeserializeObject<RootLongPoll>(json);
+                Logger.Info("Десериализируем полученные данные.");
                 if (longPollObject.Updates is null)
                 {
+
                     var error = JsonConvert.DeserializeObject<ErrorLongPoll>(json);
+                    Logger.Error($"Произошла ошибка при получении обновлений LongPoll. Код: {error.failed}");
                     if (error.failed == 1) Ts = error.ts;
                     else if (error.failed == 4) throw new UnknownVersionLongPoll($"Минимальная версия: {error.min_version} Максимальная версия: {error.max_version}");
                     else
@@ -76,11 +83,13 @@ namespace Fooxboy.VKMessagerUWP.VK
                 }
                 else
                 {
+                    Logger.Info("Старт обработки ответа...");
                     Ts = longPollObject.Ts;
                     var updates = longPollObject.Updates;
                     foreach (var update in updates)
                     {
-                        int code = (int)update[0];
+                        var code = (long)update[0];
+                        Logger.Info($"Обработка кода {code}");
 
                         if (code == 1)
                         {
@@ -93,7 +102,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Text = (string)update[5],
                                 Attachments = ((JObject)update[6]).ToObject<Attachments>(),
                             };
-                            var a = ReplaceMsgFlagEvent?.BeginInvoke(model, null, null);
+                            ReplaceMsgFlagEvent?.Invoke(model);
                             //ReplaceMsgFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 2)
@@ -107,7 +116,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Text = (string)update[5],
                                 Attachments = ((JObject)update[6]).ToObject<Attachments>(),
                             };
-                            var a = InstallMsgFlagEvent?.BeginInvoke(model, null, null);
+                            InstallMsgFlagEvent?.Invoke(model);
                             //InstallMsgFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 3)
@@ -121,7 +130,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Text = (string)update[5],
                                 Attachments = ((JObject)update[6]).ToObject<Attachments>(),
                             };
-                            var a = ResetMsgFlagEvent?.BeginInvoke(model, null, null);
+                            ResetMsgFlagEvent?.Invoke(model);
                             //ResetMsgFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 4)
@@ -135,7 +144,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Text = (string)update[5],
                                 Attachments = ((JObject)update[6]).ToObject<Attachments>(),
                             };
-                            var a = AddNewMsgEvent?.BeginInvoke(model, null, null);
+                            AddNewMsgEvent?.Invoke(model);
                             //AddNewMsgEvent?.EndInvoke(a);
                         }
                         else if (code == 5)
@@ -149,7 +158,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 NewText = (string)update[5],
                                 Attachments = ((JObject)update[6]).ToObject<Attachments>()
                             };
-                            var a = EditMsgEvent?.BeginInvoke(model, null, null);
+                            EditMsgEvent?.Invoke(model);
                             //EditMsgEvent?.EndInvoke(a);
                         }
                         else if (code == 6)
@@ -159,7 +168,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 LocalId = (long)update[2]
                             };
-                            var a = ReadAllInMsEvent?.BeginInvoke(model, null, null);
+                           ReadAllInMsEvent?.Invoke(model);
                             //ReadAllInMsEvent?.EndInvoke(a);
                         }
                         else if (code == 7)
@@ -169,7 +178,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 LocalId = (long)update[2]
                             };
-                            var a = ReadAllOutMsEvent?.BeginInvoke(model, null, null);
+                            ReadAllOutMsEvent?.Invoke(model);
                             //ReadAllOutMsEvent?.EndInvoke(a);
                         }
                         else if (code == 8)
@@ -180,7 +189,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Platform = (long)update[2],
                                 Time = (long)update[3]
                             };
-                            var a = FriendOnlineEvent?.BeginInvoke(model, null, null);
+                            FriendOnlineEvent?.Invoke(model);
                             //FriendOnlineEvent?.EndInvoke(a);
                         }
                         else if (code == 9)
@@ -191,7 +200,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Flags = (long)update[2],
                                 Time = (long)update[3]
                             };
-                            var a = FriendOfflineEvent?.BeginInvoke(model, null, null);
+                            FriendOfflineEvent?.Invoke(model);
                             //FriendOfflineEvent?.EndInvoke(a);
                         }
                         else if (code == 10)
@@ -201,7 +210,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 Mask = (long)update[2]
                             };
-                            var a = ResetDialogFlagEvent?.BeginInvoke(model, null, null);
+                            ResetDialogFlagEvent?.Invoke(model);
                             //ResetDialogFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 11)
@@ -211,7 +220,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 Flags = (long)update[2]
                             };
-                            var a = ReplaceDialogFlagEvent?.BeginInvoke(model, null, null);
+                            ReplaceDialogFlagEvent?.Invoke(model);
                             //ReplaceDialogFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 12)
@@ -221,7 +230,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 Mask = (long)update[2]
                             };
-                            var a = InstallDialogFlagEvent?.BeginInvoke(model, null, null);
+                           InstallDialogFlagEvent?.Invoke(model);
                             //InstallDialogFlagEvent?.EndInvoke(a);
                         }
                         else if (code == 13)
@@ -231,7 +240,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 LocalId = (long)update[2]
                             };
-                            var a = DeletingsAllMsgEvent?.BeginInvoke(model, null, null);
+                           DeletingsAllMsgEvent?.Invoke(model);
                             //DeletingsAllMsgEvent?.EndInvoke(a);
                         }
                         else if (code == 14)
@@ -241,7 +250,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[1],
                                 LocalId = (long)update[2]
                             };
-                            var a = RestoreDeleteMsgEvent?.BeginInvoke(model, null, null);
+                            RestoreDeleteMsgEvent?.Invoke(model);
                             //RestoreDeleteMsgEvent?.EndInvoke(a);
                         }
                         else if (code == 51)
@@ -251,7 +260,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 ChatId = (long)update[1],
                                 Self = (long)update[2]
                             };
-                            var a = OneParamChangedEvent?.BeginInvoke(model, null, null);
+                            OneParamChangedEvent?.Invoke(model);
                             //OneParamChangedEvent?.EndInvoke(a);
                         }
                         else if (code == 52)
@@ -262,7 +271,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 PeerId = (long)update[2],
                                 Info = (long)update[3]
                             };
-                            var a = EditInfoChatEvent?.BeginInvoke(model, null, null);
+                            EditInfoChatEvent?.Invoke(model);
                             //EditInfoChatEvent?.EndInvoke(a);
                         }
                         else if (code == 61)
@@ -272,7 +281,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 UserId = (long)update[1],
                                 Flags = (long)update[2]
                             };
-                            var a = UserTypingInDialogEvent?.BeginInvoke(model, null, null);
+                            UserTypingInDialogEvent?.Invoke(model);
                             //UserTypingInDialogEvent?.EndInvoke(a);
                         }
                         else if (code == 62)
@@ -282,7 +291,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 UserId = (long)update[1],
                                 ChatId = (long)update[2]
                             };
-                            var a = UserTypingInChatEvent?.BeginInvoke(model, null, null);
+                            UserTypingInChatEvent?.Invoke(model);
                             //UserTypingInChatEvent?.EndInvoke(a);
                         }
                         else if (code == 70)
@@ -292,13 +301,13 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 UserId = (long)update[1],
                                 CallId = (long)update[2]
                             };
-                            var a = UserCompletedCallEvent?.BeginInvoke(model, null, null);
+                            UserCompletedCallEvent?.Invoke(model);
                             //UserCompletedCallEvent?.EndInvoke(a);
                         }
                         else if (code == 80)
                         {
                             var model = new UnReadMessageCounterModel() { Count = (long)update[1] };
-                            var a = UnReadMessageCounterEvent?.BeginInvoke(model, null, null);
+                           UnReadMessageCounterEvent?.Invoke(model);
                             //UnReadMessageCounterEvent?.EndInvoke(a);
                         }
                         else if (code == 114)
@@ -309,16 +318,16 @@ namespace Fooxboy.VKMessagerUWP.VK
                                 Second = (long)update[2],
                                 DisabledUntil = (long)update[3]
                             };
-                            var a = NotificationSettingsChangedEvent?.BeginInvoke(model, null, null);
+                            NotificationSettingsChangedEvent?.Invoke(model);
                             //NotificationSettingsChangedEvent?.EndInvoke(a);
                         }else
                         {
-                            //Неизвестный код обновления
+                            Logger.Error($"Неизвестный код обновления LongPoll - {code}");
                         }
                     }
+                    Logger.Info("Конец обработки ответа...");
                 }
             }
-
             IsRunning = false;
         }
 
@@ -326,10 +335,12 @@ namespace Fooxboy.VKMessagerUWP.VK
         {
             string url = $"https://{Server}?act=a_check&key={Key}&ts={Ts}&wait=25&mode=2&version=3";
             string json = string.Empty;
+            Logger.Info($"Запрос к url {url}");
             using(var client = new WebClient())
             {
                json = await client.DownloadStringTaskAsync(url);
             }
+            Logger.Info("Ответ получен.");
             return json;
         }
     }
