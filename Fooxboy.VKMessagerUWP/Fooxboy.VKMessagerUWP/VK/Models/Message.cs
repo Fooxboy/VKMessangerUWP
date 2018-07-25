@@ -16,7 +16,7 @@ namespace Fooxboy.VKMessagerUWP.VK.Models
         public long random_id { get; set; }
         public List<Attach> attachments { get; set; }
         public bool important { get; set; }
-        public Geo geo { get; set; }
+        //public Geo geo { get; set; }
         public string payload { get; set; }
         public List<Message> fwd_messages { get; set; }
         public ActionChat action { get; set; }

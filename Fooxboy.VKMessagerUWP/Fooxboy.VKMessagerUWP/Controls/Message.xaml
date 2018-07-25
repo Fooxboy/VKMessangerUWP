@@ -38,6 +38,7 @@
 
         <controls:RoundImageEx x:Name="ImageUser" PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg" 
                                Grid.Row="0"
+                               PlaceholderStretch="UniformToFill"
                                Height="30"
                                Width="30"
                                CornerRadius="999"
@@ -45,19 +46,22 @@
                                Source="{x:Bind ImageUserUrl}"
                                DecodePixelHeight="30"
                                DecodePixelWidth="30"
-                               IsCacheEnabled="False"/>
+                               IsCacheEnabled="True"/>
 
-        <TextBlock x:Name="NameUserText" Text="{x:Bind NameUser}"
+        <TextBlock x:Name="NameUserText" Text="{Binding NameUser}"
                    Grid.Column="1" 
-                   Grid.Row="1"
+                   Grid.Row="0"
+                   Foreground="Black"
+                   FontSize="13"
+                   Margin="5 0 0 0"
                    Grid.ColumnSpan="2"
                    FontWeight="Bold"/>
 
-        
-        <TextBlock Grid.Column="2" x:Name="DateText" Foreground="#383838" Text="{x:Bind Date}" Grid.Row="0"/>
-        <RichTextBlock Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
+
+        <TextBlock Grid.Column="2" x:Name="DateText" Foreground="#383838" Text="{Binding Date}" Grid.Row="0"/>
+        <RichTextBlock Grid.Column="1" Foreground="Black" Grid.ColumnSpan="2" Grid.Row="1">
             <Paragraph>
-                <Run x:Name="RunBody"  Foreground="Black" Text="{x:Bind TextMessage}"/>
+                <Run x:Name="RunBody"  Foreground="Black" Text="{Binding TextMessage}"/>
             </Paragraph>
         </RichTextBlock>
 

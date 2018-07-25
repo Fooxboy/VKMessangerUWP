@@ -82,6 +82,7 @@
                                CornerRadius="999"
                                PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
                                Height="50"
+                               PlaceholderStretch="UniformToFill"
                                DecodePixelHeight="50"
                                DecodePixelWidth="50"
                                Source="{x:Bind VM.Photo, Mode=TwoWay}"

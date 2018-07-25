@@ -116,6 +116,8 @@
 
                                             <!-- photo users-->
                                             <controls:RoundImageEx Width="50" 
+                                                                   PlaceholderStretch="UniformToFill"
+                                                                   
                                                                    IsCacheEnabled="False"
                                                                    CornerRadius="999"
                                                                    PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
@@ -211,6 +213,7 @@
                         <controls:RoundImageEx Width="50" 
                                                CornerRadius="999"
                                                Height="50"
+                                               PlaceholderStretch="UniformToFill"
                                                                    Template="{StaticResource NoLoadIndikatorTemplate}"
                                                
                                                IsCacheEnabled="False"
@@ -291,6 +294,7 @@
 
                         <controls:RoundImageEx Width="50" 
                                                CornerRadius="999"
+                                               PlaceholderStretch="UniformToFill"
                                                PlaceholderSource="ms-appx:///Images/PlaceholderImage.jpg"
                                                Height="50"
                                                Template="{StaticResource NoLoadIndikatorTemplate}"

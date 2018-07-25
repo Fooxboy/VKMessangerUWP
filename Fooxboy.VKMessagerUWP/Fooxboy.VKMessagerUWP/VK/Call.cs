@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Fooxboy.VKMessagerUWP.VK.Models;
 using Fooxboy.VKMessagerUWP.Exceptions;
+using Fooxboy.VKMessagerUWP.Controls;
 
 namespace Fooxboy.VKMessagerUWP.VK
 {
@@ -24,6 +25,8 @@ namespace Fooxboy.VKMessagerUWP.VK
             {
                 var error = JsonConvert.DeserializeObject<Error>(json);
                 Logger.Error($"Произошла ошибка ВКонтакте. Код: {error.error.error_code} Сообщение: {error.error.error_msg}");
+
+                await new ExceptionDialog(new Exception($"Произошла ошибка ВКонтакте. Код: {error.error.error_code} Сообщение: {error.error.error_msg}")).ShowAsync();
 
                 switch (error.error.error_code)
                 {
@@ -45,7 +48,7 @@ namespace Fooxboy.VKMessagerUWP.VK
                         throw new VkException("Проверьте синтаксис запроса и список используемых параметров (его можно найти на странице с описанием метода).");
                     case 9:
                         Logger.Info("Начало обхода...");
-                        await Task.Delay(1000);
+                        await Task.Delay(2000);
                         return await Call<T>.Method(method, parametrs, true);
                         //throw new MoreRequestException("Нужно сократить число однотипных обращений. Для более эффективной работы Вы можете использовать execute или JSONP.");
                     case 10:
